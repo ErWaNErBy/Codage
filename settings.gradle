@@ -1,0 +1,2 @@
+rootProject.name='Codage'
+include ':app'
