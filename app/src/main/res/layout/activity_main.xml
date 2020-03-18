@@ -16,41 +16,49 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="cesar"
         android:text="@string/césar"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="vigenere"
         android:text="@string/vignère"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="homophone"
         android:text="@string/homophone"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="playfair"
         android:text="@string/playfair"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="hill"
         android:text="@string/hill"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="rectTranspo"
         android:text="@string/transposition_rectangulaire"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="des"
         android:text="@string/des"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="myEncryption"
         android:text="Mon futur chiffrement .."/>
 
 </LinearLayout>
