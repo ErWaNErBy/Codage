@@ -9,7 +9,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".HomophoneActivity"></activity>
+        <activity android:name=".MyEncryptionActivity"></activity>
+        <activity android:name=".DESActivity" />
+        <activity android:name=".RectTranspoActivity" />
+        <activity android:name=".HillActivity" />
+        <activity android:name=".PlayfairActivity" />
+        <activity android:name=".HomophoneActivity" />
         <activity android:name=".VigenereActivity" />
         <activity android:name=".CesarActivity" />
         <activity android:name=".AtbashActivity" />
