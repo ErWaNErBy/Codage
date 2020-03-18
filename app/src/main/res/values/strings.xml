@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Codage</string>
+    <string name="atbash" translatable="false">Athbash</string>
+    <string name="césar" translatable="false">César</string>
+    <string name="vignère" translatable="false">Vigenère</string>
+    <string name="homophone" translatable="false">Homophone</string>
+    <string name="playfair" translatable="false">Playfair</string>
+    <string name="hill" translatable="false">Hill</string>
+    <string name="transposition_rectangulaire">Rectangular transposition</string>
+    <string name="des" translatable="false">DES</string>
 </resources>
