@@ -5,59 +5,88 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:layout_marginTop="20dp"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
     tools:context=".MainActivity">
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="atbash"
         android:text="@string/atbash"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="cesar"
         android:text="@string/césar"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="vigenere"
         android:text="@string/vignère"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="homophone"
         android:text="@string/homophone"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="playfair"
         android:text="@string/playfair"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="hill"
         android:text="@string/hill"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="rectTranspo"
         android:text="@string/transposition_rectangulaire"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="10dp"
         android:onClick="des"
         android:text="@string/des"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_border"
+        android:textColor="@color/colorGray"
         android:onClick="myEncryption"
         android:text="Mon futur chiffrement .."/>
 
