@@ -53,6 +53,8 @@ public class CesarActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cesar);
 
+        setTitle(getString(R.string.césar));
+
         editTMessage = findViewById(R.id.getText);
         editTDecalage = findViewById(R.id.getDecal);
         result = findViewById(R.id.result);
