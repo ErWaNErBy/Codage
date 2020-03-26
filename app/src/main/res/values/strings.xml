@@ -8,4 +8,11 @@
     <string name="hill" translatable="false">Hill</string>
     <string name="transposition_rectangulaire">Rectangular transposition</string>
     <string name="des" translatable="false">DES</string>
+    <string name="emptyField">You must enter all fields</string>
+    <string name="crypt">Encrypt</string>
+    <string name="decrypt">Decrypt</string>
+    <string name="result">Result :</string>
+    <string name="messField">Your message to be encrypted/decrypted</string>
+    <string name="decalage">Offset</string>
+    <string name="infoResult">Click on the result to put it in the message area</string>
 </resources>
