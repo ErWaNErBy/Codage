@@ -77,7 +77,7 @@ public class CesarActivity extends AppCompatActivity {
         txt = editTMessage.getText().toString();
         cle = editTDecalage.getText().toString();
         if(txt.matches("") || cle.matches("")){
-            Toast.makeText(getApplicationContext(), "Vous devez saisir tous les champs", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.emptyField), Toast.LENGTH_LONG).show();
         }else{
             key = Integer.parseInt(cle);
             cesar(txt, key);
@@ -92,7 +92,7 @@ public class CesarActivity extends AppCompatActivity {
         txt = editTMessage.getText().toString();
         cle = editTDecalage.getText().toString();
         if(txt.matches("") || cle.matches("")){
-            Toast.makeText(getApplicationContext(), "Vous devez saisir tous les champs", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.emptyField), Toast.LENGTH_LONG).show();
         }else{
             key = Integer.parseInt(cle);
             cesar(txt, -key);

@@ -20,14 +20,14 @@
                 android:id="@+id/getText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Votre message à crypter"
+                android:hint="@string/messField"
                 />
             <EditText
                 android:id="@+id/getDecal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:hint="Le décalage"/>
+                android:hint="@string/decalage"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,29 +41,38 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="crypter"
-                    android:text="Crypter"/>
+                    android:text="@string/crypt"/>
                 <Button
                     android:id="@+id/decrypter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="decrypter"
-                    android:text="Decrypter"/>
+                    android:text="@string/decrypt"/>
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:text="Résultat :" />
+                android:text="@string/result" />
 
             <TextView
                 android:id="@+id/result"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
                 android:layout_marginTop="10dp"
                 android:textSize="16sp"
                 android:onClick="getResultText"
-                android:text=" " />
+                android:text="" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="13sp"
+                android:textStyle="italic"
+                android:text="@string/infoResult" />
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>
