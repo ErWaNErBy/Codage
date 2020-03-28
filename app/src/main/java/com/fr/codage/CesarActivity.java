@@ -133,10 +133,10 @@ public class CesarActivity extends AppCompatActivity {
             if (key > 255) key= key%256;            // Si la clé est supérieur à 255 (c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
             if (key <0) key = (256-(-key))%256;     // Si la clé est inférieur à 0 on change la valeur pour qu'il part de la fin de la table ASCII étendue
 
-            // ---------------------------------- RECUPERATION DU CODE ASCII
+            // ---------------------------------- RECUPERATION DU CODE DECIMAL
 
             if(codePoint > 127) {                               // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
-                int newCodePoint = getExtendChar(codePoint);    // On éxécute getExtendChar avec le décimal du caratère et récupère le bon décimal (plus de détail dans la fonction correspondante)
+                int newCodePoint = getExtendChar(codePoint);    // On éxécute getExtendChar() avec le décimal du caratère et récupère le bon décimal (plus de détail dans la fonction correspondante)
                 codePointDecal = newCodePoint + key;            // On récupère la bonne valeur du décimal + le décalage
             }else {                                             // Sinon (c'est un caractère de la table ASCII normal) ..
                 codePointDecal = codePoint + key;               // On récupère le décimal + le décalage
@@ -155,7 +155,7 @@ public class CesarActivity extends AppCompatActivity {
                 }
             } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
                 String normalCharacter = Character.toString( (char) (codePointDecal) );                                 // On récupère le caractère décalé avec son décimal
-                String hexaOfNormalChar = "\\0x"+ Integer.toHexString( codePointDecal | 0x10000).substring(1);         // On récupère l'hexa du caractère décalé ( de la forme \0x**** )
+                String hexaOfNormalChar = "\\0x"+ Integer.toHexString( codePointDecal | 0x10000).substring(1);       // On récupère l'hexa du caractère décalé ( de la forme \0x**** )
                 messEncrypt.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );    //  On ajoute dans le message résultat le caracère décalé de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
             }
         }
