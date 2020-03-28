@@ -3,10 +3,11 @@
     <string name="app_name">Codage</string>
     <string name="transposition_rectangulaire">Transposition rectangulaire</string>
     <string name="emptyField">Vous devez saisir tous les champs</string>
-    <string name="crypt">Cripter</string>
+    <string name="crypt">Crypter</string>
     <string name="decrypt">Décrypter</string>
     <string name="result">Résultat :</string>
     <string name="messField">Votre message à crypter/décrypter</string>
     <string name="decalage">Le décalage</string>
     <string name="infoResult">Cliquer sur le résultat pour le mettre dans la zone message</string>
+    <string name="cryptdecrypt">Crypter / Décrypter</string>
 </resources>

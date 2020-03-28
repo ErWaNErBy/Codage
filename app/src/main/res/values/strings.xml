@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Codage</string>
-    <string name="atbash" translatable="false">Athbash</string>
+    <string name="atbash" translatable="false">AtBash</string>
     <string name="césar" translatable="false">César</string>
     <string name="vignère" translatable="false">Vigenère</string>
     <string name="homophone" translatable="false">Homophone</string>
@@ -15,4 +15,5 @@
     <string name="messField">Your message to be encrypted/decrypted</string>
     <string name="decalage">Offset</string>
     <string name="infoResult">Click on the result to put it in the message area</string>
+    <string name="cryptdecrypt">Encrypt / Decrypt</string>
 </resources>
