@@ -10,4 +10,6 @@
     <string name="decalage">Le décalage</string>
     <string name="infoResult">Cliquer sur le résultat pour le mettre dans la zone message</string>
     <string name="cryptdecrypt">Crypter / Décrypter</string>
+    <string name="key">Clé</string>
+    <string name="keyMess">Votre message clé</string>
 </resources>
