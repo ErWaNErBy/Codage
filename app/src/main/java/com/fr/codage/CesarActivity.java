@@ -17,23 +17,23 @@ public class CesarActivity extends AppCompatActivity {
     public static int key, codePointDecal;
 
     // Liste des caractères étendus sont forme d'hexa
-    public static final String[] EXTENDEDS = {      "0x00c7", "0x00fc", "0x00e9", "0x00e2",
-            "0x00e4", "0x00e0", "0x00e5", "0x00e7", "0x00ea", "0x00eb", "0x00e8", "0x00ef",
-            "0x00ee", "0x00ec", "0x00c4", "0x00c5", "0x00c9", "0x00e6", "0x00c6", "0x00f4",
-            "0x00f6", "0x00f2", "0x00fb", "0x00f9", "0x00ff", "0x00d6", "0x00dc", "0x00a2",
-            "0x00a3", "0x00a5", "0x20a7", "0x0192", "0x00e1", "0x00ed", "0x00f3", "0x00fa",
-            "0x00f1", "0x00d1", "0x00aa", "0x00ba", "0x00bf", "0x2310", "0x00ac", "0x00bd",
-            "0x00bc", "0x00a1", "0x00ab", "0x00bb", "0x2591", "0x2592", "0x2593", "0x2502",
-            "0x2524", "0x2561", "0x2562", "0x2556", "0x2555", "0x2563", "0x2551", "0x2557",
-            "0x255d", "0x255c", "0x255b", "0x2510", "0x2514", "0x2534", "0x252c", "0x251c",
-            "0x2500", "0x253c", "0x255e", "0x255f", "0x255a", "0x2554", "0x2569", "0x2566",
-            "0x2560", "0x2550", "0x256c", "0x2567", "0x2568", "0x2564", "0x2565", "0x2559",
-            "0x2558", "0x2552", "0x2553", "0x256b", "0x256a", "0x2518", "0x250c", "0x2588",
-            "0x2584", "0x258c", "0x2590", "0x2580", "0x03b1", "0x00df", "0x0393", "0x03c0",
-            "0x03a3", "0x03c3", "0x00b5", "0x03c4", "0x03a6", "0x0398", "0x03a9", "0x03b4",
-            "0x221e", "0x03c6", "0x03b5", "0x2229", "0x2261", "0x00b1", "0x2265", "0x2264",
-            "0x2320", "0x2321", "0x00f7", "0x2248", "0x00b0", "0x2219", "0x00b7", "0x221a",
-            "0x207f", "0x00b2", "0x25a0", "0x00a0" };
+    public static final char[] EXTENDED = {         '\u00C7', '\u00FC', '\u00E9', '\u00E2',
+            '\u00E4', '\u00E0', '\u00E5', '\u00E7', '\u00EA', '\u00EB', '\u00E8', '\u00EF',
+            '\u00EE', '\u00EC', '\u00C4', '\u00C5', '\u00C9', '\u00E6', '\u00C6', '\u00F4',
+            '\u00F6', '\u00F2', '\u00FB', '\u00F9', '\u00FF', '\u00D6', '\u00DC', '\u00A2',
+            '\u00A3', '\u00A5', '\u20A7', '\u0192', '\u00E1', '\u00ED', '\u00F3', '\u00FA',
+            '\u00F1', '\u00D1', '\u00AA', '\u00BA', '\u00BF', '\u2310', '\u00AC', '\u00BD',
+            '\u00BC', '\u00A1', '\u00AB', '\u00BB', '\u2591', '\u2592', '\u2593', '\u2502',
+            '\u2524', '\u2561', '\u2562', '\u2556', '\u2555', '\u2563', '\u2551', '\u2557',
+            '\u255D', '\u255C', '\u255B', '\u2510', '\u2514', '\u2534', '\u252C', '\u251C',
+            '\u2500', '\u253C', '\u255E', '\u255F', '\u255A', '\u2554', '\u2569', '\u2566',
+            '\u2560', '\u2550', '\u256C', '\u2567', '\u2568', '\u2564', '\u2565', '\u2559',
+            '\u2558', '\u2552', '\u2553', '\u256B', '\u256A', '\u2518', '\u250C', '\u2588',
+            '\u2584', '\u258C', '\u2590', '\u2580', '\u03B1', '\u00DF', '\u0393', '\u03C0',
+            '\u03A3', '\u03C3', '\u00B5', '\u03C4', '\u03A6', '\u0398', '\u03A9', '\u03B4',
+            '\u221E', '\u03C6', '\u03B5', '\u2229', '\u2261', '\u00B1', '\u2265', '\u2264',
+            '\u2320', '\u2321', '\u00F7', '\u2248', '\u00B0', '\u2219', '\u00B7', '\u221A',
+            '\u207F', '\u00B2', '\u25A0', '\u00A0' };
 
     // Liste des décimaux des caractères étendus
     public static final int[] DECIMALS = {     199,   252,   233,   226,
@@ -74,9 +74,9 @@ public class CesarActivity extends AppCompatActivity {
     }
 
     // Quand on appuie sur le bouton crypter :
-    // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide (
+    // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide
     // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on convertir le décalage en un int et on lance la fonction cesar avec en paramètre le message et le décalage
+    // - Sinon on convertir le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage
     public void crypter(View v){
         txt = editTMessage.getText().toString();
         cle = editTDecalage.getText().toString();
@@ -89,9 +89,9 @@ public class CesarActivity extends AppCompatActivity {
     }
 
     // Quand on appuie sur le bouton decrypter :
-    // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide (
+    // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide
     // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on convertir le décalage en un int et on lance la fonction cesar avec en paramètre le message et le décalage (décalage négatif pour pouvoir reculer)
+    // - Sinon on convertir le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage (décalage négatif pour pouvoir reculer)
     public void decrypter(View v){
         txt = editTMessage.getText().toString();
         cle = editTDecalage.getText().toString();
@@ -103,15 +103,10 @@ public class CesarActivity extends AppCompatActivity {
         }
     }
 
-    // Fonction qui quand on appuie sur le texte résultat remplace la zone de texte du message par le message résultat
-    public void getResultText(View v){
-        editTMessage.setText(result.getText());
-    }
-
     // Fonction qui crypte ou décrypte avec la méthode de cryptage César et qui prend en paramètre un message à crypter/décrypter et le décalage de caractère
     public void cesar(String mess, int key){
 
-        StringBuilder messEncrypt = new StringBuilder();	// Message résultat qui contiendra le cryptage
+        StringBuilder messEncrypt = new StringBuilder();	// Message résultat qui contiendra le message crypter / décrypter
 
         for (int i = 0; i < mess.length(); i++) {   // Analyse chaque caractère du message saisi
 
@@ -123,7 +118,7 @@ public class CesarActivity extends AppCompatActivity {
                 String i1 = String.valueOf(mess.charAt(i+1));
                 String i2 = String.valueOf(mess.charAt(i+2));
                 if(i0.equals("\\") && i1.equals("0") && i2.equals("x")) {   // Si les 3 valeurs à partir de i du message contient bien : \0x   ..
-                    String hexaCode = String.format("%s%s%s%s", mess.charAt(i+3), mess.charAt(i+4), mess.charAt(i+5), mess.charAt(i+6)); // On récuperer les 4 caractères hexa après le \0x
+                    String hexaCode = String.format("%s%s%s%s", mess.charAt(i+3), mess.charAt(i+4), mess.charAt(i+5), mess.charAt(i+6));    // On récupère les 4 caractères hexa après le \0x
                     codePoint = Integer.parseInt(hexaCode,16);    // On change le décimal avec la nouvelle valeur (on converti l'hexa en décimal)
                     i=i+6;  // On passe au caractère suivant
                 }
@@ -145,21 +140,22 @@ public class CesarActivity extends AppCompatActivity {
             if(codePointDecal > 255) codePointDecal = codePointDecal%256;   // Si le décimal décalé est supérieur à 255(c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
 
             // ---------------------------------- AFFICHAGE
-            if(codePointDecal > 127) {                                  // Si le décimal du caractère décalé est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
-                String hexaOfExtendChar = "\\"+EXTENDEDS[codePointDecal-128];   // Récupère l'hexa du caractère décalé ( de la forme \0x**** )
-                if(DECIMALS[codePointDecal-128] > 255) {	                    // Si le caratère décalé n'est pas affichable ..
-                    messEncrypt.append(hexaOfExtendChar);                       // Ajoute dans le message résultat l'hexa du caracère non affichable
-                }else {                                                                                     // Sinon (c'est un caractère de la table ASCII normal) ..
-                    String extendCharacter = hexToAscii( EXTENDEDS[codePointDecal-128].substring(2) );      // On éxécute la fonction hexToAscii pour avoir le caratère décalé via sont hexa
-                    messEncrypt.append(extendCharacter);                                                    // On ajoute dans le message résultat le caracère décalé de la table ASCII étendue
-                }
-            } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
-                String normalCharacter = Character.toString( (char) (codePointDecal) );                                 // On récupère le caractère décalé avec son décimal
-                String hexaOfNormalChar = "\\0x"+ Integer.toHexString( codePointDecal | 0x10000).substring(1);       // On récupère l'hexa du caractère décalé ( de la forme \0x**** )
-                messEncrypt.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );    //  On ajoute dans le message résultat le caracère décalé de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
-            }
+            messEncrypt.append(getCharacterByDecimal(codePointDecal));      // On éxécute la fonction getCharacterByDecimal() avec le décimal du caractère décalé qui retounera le caractère correspondant
         }
-        result.setText(messEncrypt.toString());     // Affiche le message crypter dans la zone de texte result
+        result.setText(messEncrypt.toString());     // Affiche le message crypter / décrypter dans la zone de texte result
+    }
+
+    // Fontion qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
+    public static String getCharacterByDecimal(int code) {
+        StringBuilder chararter = new StringBuilder();	    // String qui contiendra le caractère correspondant au code décimal
+        if( code > 127 ) {                                  // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
+            chararter.append( EXTENDED[code - 128] );       // On récuprère le caractère correspondant dans la table EXTENDED
+        } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
+            String normalCharacter = Character.toString( (char) (code) );                                          // On récupère le caractère normal avec son décimal
+            String hexaOfNormalChar = "\\0x"+ Integer.toHexString( code | 0x10000).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x**** )
+            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caracère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
+        }
+        return chararter.toString();                        // Retourne le caractère correspondant sous forme de String
     }
 
     // Fonction qui compare le décimal du caratère avec la liste de décimal des caractères étendus et :
@@ -172,13 +168,10 @@ public class CesarActivity extends AppCompatActivity {
         }
         return 0;
     }
-    // Fonction qui récupère la valeur hexa  et retourne le caractère qui lui correspond (par exemple avec hexa + décalage de 0 : 00e9 -> é )
-    private static String hexToAscii(String hexStr) {
-        StringBuilder output = new StringBuilder();
-        for (int i = 0; i < hexStr.length(); i += 2) {
-            String str = hexStr.substring(i, i + 2);
-            output.append((char) Integer.parseInt(str, 16));
-        }
-        return output.toString().substring(1);
+
+    // Fonction qui quand on appuie sur le texte résultat remplace la zone de texte du message par le message résultat
+    public void getResultText(View v){
+        editTMessage.setText(result.getText());
     }
+
 }
