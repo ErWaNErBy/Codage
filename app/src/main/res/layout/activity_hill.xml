@@ -1,9 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".HillActivity">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:onClick="closeKeyboard">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/getText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/messField"/>
+
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:orientation="horizontal"
+            android:layout_margin="10dp"
+            android:gravity="center_horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="a = "/>
+                <NumberPicker
+                    android:id="@+id/pickerA"
+                    android:layout_width="wrap_content"
+                    android:descendantFocusability="blocksDescendants"
+                    android:layout_height="60dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text=" b = "/>
+                <NumberPicker
+                    android:id="@+id/pickerB"
+                    android:layout_width="wrap_content"
+                    android:descendantFocusability="blocksDescendants"
+                    android:layout_height="60dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="c = "/>
+                <NumberPicker
+                    android:id="@+id/pickerC"
+                    android:layout_width="wrap_content"
+                    android:descendantFocusability="blocksDescendants"
+
+                    android:layout_height="60dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text=" d = "/>
+                <NumberPicker
+                    android:id="@+id/pickerD"
+                    android:layout_width="wrap_content"
+                    android:descendantFocusability="blocksDescendants"
+                    android:layout_height="60dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                android:gravity="center_horizontal">
+                <Button
+                    android:id="@+id/crypter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="crypter"
+                    android:text="@string/crypt"/>
+                <Button
+                    android:id="@+id/decrypter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="decrypter"
+                    android:text="@string/decrypt"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="@string/result" />
+
+            <TextView
+                android:id="@+id/result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="10dp"
+                android:layout_marginTop="10dp"
+                android:textSize="16sp"
+                android:onClick="getResultText"
+                android:text="" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="13sp"
+                android:textStyle="italic"
+                android:text="@string/infoResult" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
