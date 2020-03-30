@@ -18,4 +18,5 @@
     <string name="cryptdecrypt">Encrypt / Decrypt</string>
     <string name="key">Key</string>
     <string name="keyMess">Key message</string>
+    <string name="errorMatrice">Impossible, the format of the matrix will not allow decryption.</string>
 </resources>

@@ -12,4 +12,5 @@
     <string name="cryptdecrypt">Crypter / Décrypter</string>
     <string name="key">Clé</string>
     <string name="keyMess">Votre message clé</string>
+    <string name="errorMatrice">Impossible, le format de la matrice ne permettra pas le décryptage</string>
 </resources>
