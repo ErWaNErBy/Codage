@@ -20,4 +20,7 @@
     <string name="keyMess">Key message</string>
     <string name="errorMatrice">Impossible, the format of the matrix will not allow decryption.</string>
     <string name="rsa" translatable="false">RSA</string>
+    <string name="getP">Prime number P</string>
+    <string name="getQ">Prime number Q</string>
+    <string name="notPrime">" isn't a prime number"</string>
 </resources>

@@ -13,4 +13,7 @@
     <string name="key">Clé</string>
     <string name="keyMess">Votre message clé</string>
     <string name="errorMatrice">Impossible, le format de la matrice ne permettra pas le décryptage</string>
+    <string name="getP">P, un nombre premier</string>
+    <string name="getQ">Q, un nombre premier</string>
+    <string name="notPrime">" n'est pas un nombre premier"</string>
 </resources>
