@@ -19,4 +19,5 @@
     <string name="key">Key</string>
     <string name="keyMess">Key message</string>
     <string name="errorMatrice">Impossible, the format of the matrix will not allow decryption.</string>
+    <string name="rsa" translatable="false">RSA</string>
 </resources>
