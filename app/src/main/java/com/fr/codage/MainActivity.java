@@ -54,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(otherActivity);
     }
 
+    public void rsa(View v){
+        Intent otherActivity = new Intent(getApplicationContext(), RSAActivity.class);
+        startActivity(otherActivity);
+    }
+
     public void myEncryption(View v){
         Intent otherActivity = new Intent(getApplicationContext(), MyEncryptionActivity.class);
         startActivity(otherActivity);
