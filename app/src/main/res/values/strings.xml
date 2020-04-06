@@ -23,4 +23,6 @@
     <string name="getP">Prime number P</string>
     <string name="getQ">Prime number Q</string>
     <string name="notPrime">" isn't a prime number"</string>
+    <string name="notHex">Invalid hexadecimal format</string>
+    <string name="keyNotHex">Invalid hexadecimal format of the key</string>
 </resources>

@@ -16,4 +16,6 @@
     <string name="getP">P, un nombre premier</string>
     <string name="getQ">Q, un nombre premier</string>
     <string name="notPrime">" n'est pas un nombre premier"</string>
+    <string name="notHex">Format hexadécimal incorrect</string>
+    <string name="keyNotHex">Format hexadécimal de la clé incorrect</string>
 </resources>
