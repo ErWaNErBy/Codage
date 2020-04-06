@@ -17,6 +17,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Hexadécimal" />
+
             <EditText
                 android:id="@+id/getText"
                 android:layout_width="match_parent"

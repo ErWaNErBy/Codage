@@ -2,8 +2,6 @@ package com.fr.codage;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,10 +10,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DESActivity extends AppCompatActivity {
 
@@ -24,6 +25,7 @@ public class DESActivity extends AppCompatActivity {
     public static final int DECRYPT = -1;
     public EditText editTMessage, editTCle;
     public TextView result, detail;
+    public Switch hexaMode;
     public static String txt, cle;
     public static StringBuilder trace = new StringBuilder();
 
@@ -141,6 +143,42 @@ public class DESActivity extends AppCompatActivity {
             1, 2, 2, 2, 2, 2, 2, 1
     };
 
+    // Liste des caractères étendus sont forme d'hexa
+    public static final char[] EXTENDED = {         '\u00C7', '\u00FC', '\u00E9', '\u00E2',
+            '\u00E4', '\u00E0', '\u00E5', '\u00E7', '\u00EA', '\u00EB', '\u00E8', '\u00EF',
+            '\u00EE', '\u00EC', '\u00C4', '\u00C5', '\u00C9', '\u00E6', '\u00C6', '\u00F4',
+            '\u00F6', '\u00F2', '\u00FB', '\u00F9', '\u00FF', '\u00D6', '\u00DC', '\u00A2',
+            '\u00A3', '\u00A5', '\u20A7', '\u0192', '\u00E1', '\u00ED', '\u00F3', '\u00FA',
+            '\u00F1', '\u00D1', '\u00AA', '\u00BA', '\u00BF', '\u2310', '\u00AC', '\u00BD',
+            '\u00BC', '\u00A1', '\u00AB', '\u00BB', '\u2591', '\u2592', '\u2593', '\u2502',
+            '\u2524', '\u2561', '\u2562', '\u2556', '\u2555', '\u2563', '\u2551', '\u2557',
+            '\u255D', '\u255C', '\u255B', '\u2510', '\u2514', '\u2534', '\u252C', '\u251C',
+            '\u2500', '\u253C', '\u255E', '\u255F', '\u255A', '\u2554', '\u2569', '\u2566',
+            '\u2560', '\u2550', '\u256C', '\u2567', '\u2568', '\u2564', '\u2565', '\u2559',
+            '\u2558', '\u2552', '\u2553', '\u256B', '\u256A', '\u2518', '\u250C', '\u2588',
+            '\u2584', '\u258C', '\u2590', '\u2580', '\u03B1', '\u00DF', '\u0393', '\u03C0',
+            '\u03A3', '\u03C3', '\u00B5', '\u03C4', '\u03A6', '\u0398', '\u03A9', '\u03B4',
+            '\u221E', '\u03C6', '\u03B5', '\u2229', '\u2261', '\u00B1', '\u2265', '\u2264',
+            '\u2320', '\u2321', '\u00F7', '\u2248', '\u00B0', '\u2219', '\u00B7', '\u221A',
+            '\u207F', '\u00B2', '\u25A0', '\u00A0' };
+
+    // Liste des décimaux des caractères étendus
+    public static final int[] DECIMALS = {     199,   252,   233,   226,
+            228,   224,   229,   231,   234,   235,   232,   239,   238,
+            236,   196,   197,   201,   230,   198,   244,   246,   242,
+            251,   249,   255,   214,   220,   162,   163,   165,  8359,
+            402,   225,   237,   243,   250,   241,   209,   170,   186,
+            191,  8976,   172,   189,   188,   161,   171,   187,  9617,
+            9618, 9619,  9474,  9508,  9569,  9570,  9558,  9557,  9571,
+            9553, 9559,  9565,  9564,  9563,  9488,  9492,  9524,  9516,
+            9500, 9472,  9532,  9566,  9567,  9562,  9556,  9577,  9574,
+            9568, 9552,  9580,  9575,  9576,  9572,  9573,  9561,  9560,
+            9554, 9555,  9579,  9578,  9496,  9484,  9608,  9604,  9612,
+            9616, 9600,   945,   223,   915,   960,   931,   963,   181,
+            964,  934,   920,   937,   948,  8734,   966,   949,  8745,
+            8801,  177,  8805,  8804,  8992,  8993,   247,  8776,   176,
+            8729,  183,  8730,  8319,   178,  9632,   160 };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,6 +190,7 @@ public class DESActivity extends AppCompatActivity {
         editTCle = findViewById(R.id.getCle);
         result = findViewById(R.id.result);
         detail = findViewById(R.id.detail);
+        hexaMode = findViewById(R.id.switch1);
 
         detail.setMovementMethod(new ScrollingMovementMethod());    // Activer le scroll du textViev pour voir la trace complète
     }
@@ -159,7 +198,8 @@ public class DESActivity extends AppCompatActivity {
     // Quand on appuie sur le bouton crypter :
     // - On récupèrer les valeurs de la zone de texte message et de la clé si il ne sont pas vide
     // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction execDES() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici crypter
+    // - Sinon on lance la fonction getValDES() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici crypter
+    //     qui va d'abord vérifier quelle valeur a été saisite
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void crypter(View v){
         trace.setLength(0);
@@ -168,7 +208,7 @@ public class DESActivity extends AppCompatActivity {
         if(txt.matches("") || cle.matches("")){
             Toast.makeText(getApplicationContext(), getString(R.string.emptyField), Toast.LENGTH_LONG).show();
         }else{
-            execDES(txt, cle, ENCRYPT);
+            getValDES(txt, cle, ENCRYPT);
         }
     }
 
@@ -176,6 +216,7 @@ public class DESActivity extends AppCompatActivity {
     // - On récupèrer les valeurs de la zone de texte message et de la clé si il ne sont pas vide
     // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
     // - Sinon on lance la fonction execDES() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici decrypter
+    //     qui va d'abord vérifier quelle valeur a été saisite
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void decrypter(View v){
         trace.setLength(0);
@@ -184,8 +225,166 @@ public class DESActivity extends AppCompatActivity {
         if(txt.matches("") || cle.matches("")){
             Toast.makeText(getApplicationContext(), getString(R.string.emptyField), Toast.LENGTH_LONG).show();
         }else{
-            execDES(txt, cle, DECRYPT);
+            getValDES(txt, cle, DECRYPT);
         }
+    }
+
+    // Fonction qui prend en paramètre le message, le message clé et la méthode de cryptage et qui va voir via le bouton switch si le bloc est une chaîne
+    //    hexa ou une chaine de la table ASCII et qui va ensuite éxécuter le cryptage avec les bonnes valeurs binaires converties
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void getValDES(String bloc, String cle, int cryptingMethod){
+        // Si la chaîne et la clé sont bien des hexa alors il exécute directement la fonction execDES() pour commencer le cryptage et affiche ensuite le résultat
+        // Sinon on envoi une bulle d'info pour préciser que les champs ne sont pas conforme
+        if(hexaMode.isChecked()){
+            if(testHex(bloc) && testHex(cle)){
+                while(bloc.length()%16 != 0) bloc += "0";
+                String execution ="";
+                StringBuilder  messEncrypt = new StringBuilder();
+                for(int i=0;i<bloc.length();i +=16) {
+                    String a = bloc.substring(i, i + 16);
+                    execution = execDES(a, cle, cryptingMethod);
+                    messEncrypt.append(execution);
+                }
+                result.setText(messEncrypt);
+            } else {
+                Toast.makeText(getApplicationContext(), getString(R.string.notHex), Toast.LENGTH_LONG).show();
+            }
+
+        // Sinon ( c'est une chaîne de la table ASCII) il converti la chaîne caractère par caractère en son bon code décimal puis en hexa puis en binaire et
+        //      exécute la fonction execDES() pour commencer le cryptage et affiche ensuite le résultat
+        }else {
+            if(!testHex(cle)){  // Si la clé n'est pas un hexa on envoi une bulle d'info pour préciser qu'il n'est pas conforme
+                Toast.makeText(getApplicationContext(), getString(R.string.keyNotHex), Toast.LENGTH_LONG).show();
+            }else {
+                List<Integer> listOfDec = getListOfDec(bloc);   // Récupère la liste des décimaux de chaque caractère du bloc
+
+                // [ Avec la liste des décimaux on crée d'une liste contenant des groupements de 8 caractères sous forme d'octet
+                List<List<String>> allList = new ArrayList<>();
+                for(int j=0; j < listOfDec.size() ;j++) {
+                    List<String> list = new ArrayList<> ();
+                    for(int i=j; i<(j+8); i++) {
+                        String hexaOfCodePoint = Integer.toHexString(listOfDec.get(i));     // Récupère l'hexa du décimal à la position i de la liste
+                        String hexToBinary = hexaToBin(hexaOfCodePoint);                    // Le converti en binaire
+                        while(hexToBinary.length() != 8) hexToBinary = "0" + hexToBinary;   // Complète les 0 manquante pour faire 8 bits
+                        list.add( hexToBinary );                                            // L'ajoute à la liste
+                    }
+                    j= j+7;                     // Saute les caractères déjà analyse dans la deuxième boucle
+                    allList.add(list);          // Et ajoute la liste contenant les 8 octets
+                }
+                // ]
+
+                // [Création du nouveau bloc complet avec toutes les valeurs binaires de ses caractères
+                StringBuilder newBloc = new StringBuilder();
+                for(int i=0; i< allList.size(); i++) {
+                    for(int j=0; j<allList.get(i).size();j++ ) {
+                        //System.out.print(allList.get(i).get(j)+" ");
+                        newBloc.append(allList.get(i).get(j));
+                    }
+                    //System.out.println(" ");
+                }
+                //System.out.println(newBloc.toString());
+                // ]
+
+                // [ Boucle qui crypte / décrypte chaque morceaux de 64 bits du bloc et qui ajoute au fur et à mesure les valeurs crypter dans une variable resultant qui sera ensuite affiché
+                StringBuilder messEncrypt = new StringBuilder();
+                for(int i=0;i<newBloc.length();i +=64) {
+                    String a = binToHexa(newBloc.toString().substring(i,i+64));
+                    String exe;
+                    if(cryptingMethod == 1){
+                        exe = execDES(a, cle, ENCRYPT);
+                    } else {
+                        exe = execDES(a, cle, DECRYPT);
+                    }
+                    List<Integer> result = getDecimals(exe);
+                    for(int j=0; j<result.size(); j++) {
+                        messEncrypt.append(getCharacterByDecimal(result.get(j)));
+                    }
+                }
+                // ]
+                System.out.println("C = " + messEncrypt);
+                result.setText(messEncrypt);
+            }
+        }
+        detail.setText(trace.toString());
+    }
+
+    // Fonction qui prend en paramètre une chaine de caractère et qui retourne une liste contenant les valeurs décimaux de chaques caractères
+    public List<Integer> getListOfDec(String mess){
+        List<Integer> listOfDec = new ArrayList<>();             // list qui conteindra les décimaux des caractères du message saisi
+        for(int j = 0; j < mess.length(); j++) {             // Analyse chaque caractère du message saisi
+            int codePointKey = mess.codePointAt( j );        // On récupère le décimal du caractère du message
+            // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue),on éxécute getExtendChar() avec le décimal du caratère et récupère le bon décimal
+            if(codePointKey > 127)  codePointKey = getExtendChar(codePointKey);
+            if(j<=mess.length()-7) {                 // Si il reste encore 7 cactères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
+                String i0 = String.valueOf(mess.charAt(j));
+                String i1 = String.valueOf(mess.charAt(j+1));
+                String i2 = String.valueOf(mess.charAt(j+2));
+                if(i0.equals("\\") && i1.equals("0") && i2.equals("x")) {   // Si les 3 valeurs à partir de i du message contient bien : \0x   ..
+                    String hexaCode = String.format("%s%s%s%s", mess.charAt(j+3), mess.charAt(j+4), mess.charAt(j+5), mess.charAt(j+6));    // On récupère les 4 caractères hexa après le \0x
+                    codePointKey = Integer.parseInt(hexaCode,16);   // On change le décimal avec la nouvelle valeur (on converti l'hexa en décimal)
+                    j=j+6;  // On passe au caractère suivant
+                }
+            }
+            listOfDec.add(codePointKey); // On ajoute dans la liste le décimal du caractère du message saisi
+        }
+        while(listOfDec.size()%8 != 0) listOfDec.add(0);
+
+        return listOfDec;
+    }
+
+    // Fonction qui prend en paramètre une chaine hexa et qui retourne la liste des décimaux de chacun des caractères
+    public static List<Integer> getDecimals(String hex){
+        List<Integer> res = new ArrayList<>();
+        String digits = "0123456789ABCDEF";
+        hex = hex.toUpperCase();
+        int val = 0;
+        for (int i = 0; i < hex.length(); i +=2) {
+            String temps = String.format("%s%s",hex.charAt(i),hex.charAt(i+1));
+            for (int j = 0; j < temps.length(); j++) {
+                char c = temps.charAt(j);
+                int d = digits.indexOf(c);
+                val = 16*val + d;
+            }
+            res.add(val);
+            val=0;
+        }
+        return res;
+    }
+
+    // Fontion qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
+    public static String getCharacterByDecimal(int code) {
+        StringBuilder chararter = new StringBuilder();	    // String qui contiendra le caractère correspondant au code décimal
+        if( code > 127 ) {                                  // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
+            chararter.append( EXTENDED[code - 128] );       // On récuprère le caractère correspondant dans la table EXTENDED
+        } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
+            String normalCharacter = Character.toString( (char) (code) );                                          // On récupère le caractère normal avec son décimal
+            String hexaOfNormalChar = "\\0x"+ Integer.toHexString( code | 0x10000).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x**** )
+            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caracère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
+        }
+        return chararter.toString();                        // Retourne le caractère correspondant sous forme de String
+    }
+
+    // Fonction qui compare le décimal du caratère avec la liste de décimal des caractères étendus et :
+    // -- si les déicmaux sont identique, retoune le bon décimal du caractère correspondant de la table ASCII étendue
+    private static int getExtendChar(int code) {
+        for(int i=0; i<DECIMALS.length; i++) {
+            if(DECIMALS[i] == code) {
+                return 128+i;
+            }
+        }
+        return 0;
+    }
+
+    // Vérifie si une chaine de caractère est bien un hexa
+    private static boolean testHex(String value) {
+        boolean res;
+        try {
+            BigInteger hex = new BigInteger(value,16);
+            res = true;
+        } catch (NumberFormatException e) {
+            res = false;
+        }
+        return (res);
     }
 
     // Fonction qui prend en paramètre une table de permutation et un hexa et qui retourne la l'hexa permuté
@@ -323,30 +522,30 @@ public class DESActivity extends AppCompatActivity {
 
     // Fonction qui exécute le cryptage / décryptage DES avec en paramètre un bloc et une clé en hexa et qui retourne le bloc chiffré
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void execDES(String bloc, String cle, int cryptingMethod) {
-
+    public String execDES(String bloc, String cle, int cryptingMethod) {
+        // Si la clé ne fait pas 64 bits on lui ajoute des 0 à la fin
+        while(cle.length() < 17) cle += "0";
         // Récuperation des clés
         String[] keys = getAllKeys(cle);
-        //System.out.println(Arrays.toString(keys));
 
         // Permutation initiale
-        Log.d(DETAILS,"BinOfBloc : "+hexaToBin(bloc));
+        Log.d(DETAILS, "BinOfBloc : " + hexaToBin(bloc));
         String permutInitiale = permutation(tablePermutInitiale, bloc);
         trace.append("------------------- TRACE -------------------\n");
-        Log.d(DETAILS, "L0 = "+hexaToBin(permutInitiale.substring(0,8))  +" = "+permutInitiale.substring(0,8) );
+        Log.d(DETAILS, "L0 = " + hexaToBin(permutInitiale.substring(0, 8)) + " = " + permutInitiale.substring(0, 8));
         trace.append("L0 = ").append(hexaToBin(permutInitiale.substring(0, 8))).append(" = ").append(permutInitiale.substring(0, 8)).append("\n");
-        Log.d(DETAILS, "R0 = "+hexaToBin(permutInitiale.substring(8,16)) +" = "+permutInitiale.substring(8,16) );
+        Log.d(DETAILS, "R0 = " + hexaToBin(permutInitiale.substring(8, 16)) + " = " + permutInitiale.substring(8, 16));
         trace.append("R0 = ").append(hexaToBin(permutInitiale.substring(8, 16))).append(" = ").append(permutInitiale.substring(8, 16)).append("\n");
-        Log.d(DETAILS,"--------------------------------");
+        Log.d(DETAILS, "--------------------------------");
         trace.append("--------------------------------\n");
         // Itération - Feistel
-        if(cryptingMethod == 1) {
+        if (cryptingMethod == 1) {
             for (int i = 0; i < 16; i++) {
                 permutInitiale = feistel(permutInitiale, keys[i], i);
             }
         } else {
             for (int i = 15; i > -1; i--) {
-                permutInitiale = feistel(permutInitiale, keys[i], 15-i);
+                permutInitiale = feistel(permutInitiale, keys[i], 15 - i);
             }
         }
 
@@ -354,8 +553,7 @@ public class DESActivity extends AppCompatActivity {
         String permutFinale = permutInitiale.substring(8, 16) + permutInitiale.substring(0, 8);
         permutFinale = permutation(tablePermutFinal, permutFinale);
 
-        result.setText(permutFinale);
-        detail.setText(trace.toString());
+        return permutFinale;
     }
 
     // Réduit le clavier quand on touche autre chose qu'un champs à saisir
