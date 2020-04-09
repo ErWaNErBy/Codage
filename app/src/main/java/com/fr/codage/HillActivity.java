@@ -1,21 +1,22 @@
 package com.fr.codage;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HillActivity extends AppCompatActivity {
 
+    public static final String DETAILS = "DETAILS";
     public static final int ENCRYPT =  1;
     public static final int DECRYPT = -1;
     public static String[] pickerVals;
@@ -25,7 +26,7 @@ public class HillActivity extends AppCompatActivity {
     public static String txt;
     public static int pA, pB, pC, pD;
 
-    // Liste des caractères étendus sont forme d'hexa
+    // Liste des caractères étendus sous forme d'hexa
     public static final char[] EXTENDED = {         '\u00C7', '\u00FC', '\u00E9', '\u00E2',
             '\u00E4', '\u00E0', '\u00E5', '\u00E7', '\u00EA', '\u00EB', '\u00E8', '\u00EF',
             '\u00EE', '\u00EC', '\u00C4', '\u00C5', '\u00C9', '\u00E6', '\u00C6', '\u00F4',
@@ -76,7 +77,7 @@ public class HillActivity extends AppCompatActivity {
         pickerC = findViewById(R.id.pickerC);
         pickerD = findViewById(R.id.pickerD);
 
-        // Ajout des valeurs littéralement dans le number picker car il ne prend pas en compte les nombres négatifs
+        // Ajout des valeurs littéralement dans le sélecteur de nombre car il ne prend pas en compte les nombres négatifs
         pickerVals = new String[] {"-9","-8","-7","-6","-5","-4","-3","-2","-1","0","1","2","3","4","5","6","7","8","9"};
         pickerA.setMaxValue(18);
         pickerA.setMinValue(0);
@@ -117,10 +118,19 @@ public class HillActivity extends AppCompatActivity {
         });
     }
 
-    // Quand on appuie sur le bouton crypter :
-    // - On récupèrer les valeurs de la zone de texte message (si il n'est pas vide) et des chiffres composera la matrice
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction hill() avec en paramètre le message, les chiffres qui composera la matrice et la méthode dencryptage qui est ici ENCrYPT pour crypter
+    // Réduit le clavier quand on touche autre chose qu'un champ à saisir
+    public void closeKeyboard(View v) {
+        View view = this.getCurrentFocus();
+        if(view != null){
+            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    // Quand on appuie sur le bouton Crypter :
+    // - On récupère les valeurs de la zone de texte message (si il n'est pas vide) et des chiffres qui composeront la matrice
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on lance la fonction hill() avec en paramètre le message, les chiffres qui composeront la matrice et la méthode dencryptage qui est ici : crypter
     public void crypter(View v){
         txt = editTMessage.getText().toString();
         if(txt.matches("")){
@@ -130,10 +140,10 @@ public class HillActivity extends AppCompatActivity {
         }
     }
 
-    // Quand on appuie sur le bouton decrypter :
-    // - On récupèrer les valeurs de la zone de texte message (si il n'est pas vide) et des chiffres composera la matrice
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction hill() avec en paramètre le message, les chiffres qui composera la matrice et la méthode dencryptage qui est ici DECrYPT pour décrypter
+    // Quand on appuie sur le bouton Décrypter :
+    // - On récupère les valeurs de la zone de texte message (si il n'est pas vide) et des chiffres qui composeront la matrice
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on lance la fonction hill() avec en paramètre le message, les chiffres qui composeront la matrice et la méthode dencryptage qui est ici : décrypter
     public void decrypter(View v){
         txt = editTMessage.getText().toString();
         if(txt.matches("")){
@@ -143,58 +153,42 @@ public class HillActivity extends AppCompatActivity {
         }
     }
 
-    // Fonction qui crypte ou décrypte avec la méthode de cryptage Hill et qui prend en paramètre un message à crypter/décrypter, des valeurs d'une matrice et la méthode de cryptages
+    // Fonction qui crypte ou décrypte avec la méthode de cryptage Hill et qui prend en paramètre un message à crypter/décrypter, des valeurs d'une matrice et la méthode de cryptage
     public void hill(String mess, int A, int B, int C, int D, int cryptingMethod){
-        StringBuilder messEncrypt = new StringBuilder();	// Message qui contiendra le cryptage
+        StringBuilder messEncrypt = new StringBuilder();	// Message résultat qui contiendra le message crypté / décrypté
 
-        List<Integer> list = new ArrayList<>();             // list qui conteindra les décimaux des caractères du message saisi
-        for(int j = 0; j < mess.length(); j++) {             // Analyse chaque caractère du message saisi
-            int codePointKey = mess.codePointAt( j );        // On récupère le décimal du caractère du message
-            // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue),on éxécute getExtendChar() avec le décimal du caratère et récupère le bon décimal
-            if(codePointKey > 127)  codePointKey = getExtendChar(codePointKey);
-            if(j<=mess.length()-7) {                 // Si il reste encore 7 cactères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
-                String i0 = String.valueOf(mess.charAt(j));
-                String i1 = String.valueOf(mess.charAt(j+1));
-                String i2 = String.valueOf(mess.charAt(j+2));
-                if(i0.equals("\\") && i1.equals("0") && i2.equals("x")) {   // Si les 3 valeurs à partir de i du message contient bien : \0x   ..
-                    String hexaCode = String.format("%s%s%s%s", mess.charAt(j+3), mess.charAt(j+4), mess.charAt(j+5), mess.charAt(j+6));    // On récupère les 4 caractères hexa après le \0x
-                    codePointKey = Integer.parseInt(hexaCode,16);   // On change le décimal avec la nouvelle valeur (on converti l'hexa en décimal)
-                    j=j+6;  // On passe au caractère suivant
-                }
-            }
-            list.add(codePointKey); // On ajoute dans la liste le décimal du caractère du message saisi
-        }
+        List<Integer> listOfDec = getListOfDec(mess);       // Liste qui contient les décimaux de chaque caractère du message
 
-
-        for (int i = 0; i < list.size(); i = i + 2) {   // Analyse chaque décimaux deux par deux du message saisi qu'on a mis dans une liste
-            if(list.size()%2 != 0) list.add(35);       // Si la taille de la liste est impair, on ajoute un caractère (35 -> #)
+        for (int i = 0; i < listOfDec.size(); i = i + 2) {   // Analyse chaque décimal deux par deux du message saisi qu'on a mis dans une liste
+            if(listOfDec.size()%2 != 0) listOfDec.add(35);       // Si la taille de la liste est impaire, on ajoute un décimal d'un caractère (35 -> #)
 
             // ------------------------------------------ RECUPERATION DU DECIMAL
 
-            //---------------------- Partage en bloc de 2 avec récuépération de décimal
+            //---------------------- Partage en bloc de 2 avec récupération de décimal
 
-            int codePointChar0 = list.get(i);       // On récupère le décimal du caractère à la position i de la liste
-            int codePointChar1 =list.get(i+1);      // On récupère le décimal du caractère à la position i+1 de la liste
+            int codePointChar0 = listOfDec.get(i);       // On récupère le décimal du caractère à la position i de la liste
+            int codePointChar1 =listOfDec.get(i+1);      // On récupère le décimal du caractère à la position i+1 de la liste
 
             int determinant = det(pA,pB,pC,pD);                     // Calcule le déterminant de la matrice
-            if( determinant==0 || (determinant%2 == 0 && determinant%13 != 0) ) {       // Si le déterminant de la matrice est égal à 0 ou qu'il est pair et non-divisible par 13 ..
+            if( determinant==0 || (determinant%2 == 0 && determinant%13 != 0) ) {       // Si le déterminant de la matrice est égal à 0 ou qu'il est pair et non divisible par 13 ..
                 Toast.makeText(getApplicationContext(),  getString(R.string.errorMatrice), Toast.LENGTH_LONG).show();   // On affiche que la matrice n'est pas convenable si l'on souhaite par la suite décrypter
             } else {                                                                    // Sinon (la matrice permet le décryptage) ..
 
-                // ==================================CRYPTAGE
+                // ====================================== CRYPTAGE
 
                 if(cryptingMethod == 1){                // Si la méthode de cryptage est 1 (c'est-à-dire que l'on souhaite crypter) ..
 
                     //-------------- Combinaison linéaire du bloc et modulo
 
-                    int linearComb0 = mod(A*codePointChar0 + B*codePointChar1,256);     // On effectue la combinaison linéaire 0 et on éexute la fonction mod() avec en paramètre le 1er élément du bloc et la valeur du modulo pour récupérer la bonne valeur du décimal
-                    int linearComb1 = mod(C*codePointChar0 + D*codePointChar1,256);     // On effectue la combinaison linéaire 1 et on éexute la fonction mod() avec en paramètre le 1er élément du bloc et la valeur du modulo pour récupérer la bonne valeur du décimal
+                    int linearComb0 = mod(A*codePointChar0 + B*codePointChar1,256);     // On effectue la combinaison linéaire 0 et on éxecute la fonction mod() avec en paramètre le 1er élément du bloc et la valeur du modulo pour récupérer la bonne valeur du décimal
+                    int linearComb1 = mod(C*codePointChar0 + D*codePointChar1,256);     // On effectue la combinaison linéaire 1 et on éxecute la fonction mod() avec en paramètre le 1er élément du bloc et la valeur du modulo pour récupérer la bonne valeur du décimal
+
+                    Log.d(DETAILS,"codePoint : "+codePointChar0 +" "+codePointChar1+" linear : "+linearComb0+" "+linearComb1);
 
                     // ---------------------------------- AFFICHAGE
 
                     messEncrypt.append(getCharacterByDecimal(linearComb0));
                     messEncrypt.append(getCharacterByDecimal(linearComb1));
-                    //System.out.println("codePoint : "+codePointChar0 +" "+codePointChar1+" linear : "+linearComb0+" "+linearComb1);
 
                     // ================================== DECRYPTAGE
 
@@ -210,14 +204,17 @@ public class HillActivity extends AppCompatActivity {
                     int val0 = mod(inverseDet[0]*codePointChar0 + inverseDet[1]*codePointChar1,256);    // On récupère la valeur du décimal du premier élément du bloc
                     int val1 = mod(inverseDet[2]*codePointChar0 + inverseDet[3]*codePointChar1,256);    // On récupère la valeur du décimal du deuxième élément du bloc
 
+                    Log.d(DETAILS,"codePoint : "+codePointChar0 +" "+codePointChar1+" values : "+val0+" "+val1);
+
                     // ---------------------------------- AFFICHAGE
 
+                    // On exécute la fonction getCharacterByDecimal() avec chacun des décimaux qui retournera le caractère qui lui correspond et l'ajoute dans le message résultat
                     messEncrypt.append(getCharacterByDecimal(val0));
                     messEncrypt.append(getCharacterByDecimal(val1));
                 }
             }
         }
-        result.setText(messEncrypt.toString());     // Affiche le message crypter / décrypter dans la zone de texte result
+        result.setText(messEncrypt.toString());     // Affiche le message crypté / décrypté dans la zone de texte result
     }
 
     // Fonction qui retourne le reste d'une division avec en paramètre la valeur à diviser et son modulo
@@ -225,12 +222,12 @@ public class HillActivity extends AppCompatActivity {
         return x >= 0 ? x % y : y - 1 - ((-x-1) % y) ;
     }
 
-    // Fonction qui retourne la valeur du déterminant avec en paramètres les valeurs d'une matrice
+    // Fonction qui retourne la valeur du déterminant avec en paramètre les valeurs d'une matrice
     public static int det(int a, int b, int c, int d) {
         return(a*d-b*c);
     }
 
-    // Fonction qui retourne la matrice pour calculer l'inverse de la matrice avec en paramètres les valeurs d'une matrice
+    // Fonction qui retourne la matrice pour calculer l'inverse de la matrice avec en paramètre les valeurs d'une matrice
     public static int[] invDet(int a, int b, int c, int d) {
         return new int[]{d,-b,-c,a};
     }
@@ -255,31 +252,56 @@ public class HillActivity extends AppCompatActivity {
         }
     }
 
-
-    // Réduit le clavier quand on touche autre chose qu'un champs à saisir
-    public void closeKeyboard(View v) {
-        View view = this.getCurrentFocus();
-        if(view != null){
-            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    // Fonction qui vérifie si une chaîne de caractères est bien un hexa
+    private static boolean testHex(String value) {
+        boolean res;
+        try {
+            new BigInteger(value,16);
+            res = true;
+        } catch (NumberFormatException e) {
+            res = false;
         }
+        return (res);
     }
 
-    // Fontion qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
+    // Fonction qui prend en paramètre une chaîne de caractères et qui retourne une liste contenant les valeurs décimales de chaque caractère
+    public static List<Integer> getListOfDec(String mess){
+        List<Integer> listOfDec = new ArrayList<>();             // Liste qui contiendra les décimaux des caractères du message saisi
+        for(int j = 0; j < mess.length(); j++) {             // Analyse chaque caractère du message saisi
+            int codePointKey = mess.codePointAt( j );        // On récupère le décimal du caractère à la position j du message
+            // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue), on exécute getExtendChar() avec le décimal du caractère et récupère le bon décimal
+            if(codePointKey > 127)  codePointKey = getExtendChar(codePointKey);
+            if(j<=mess.length()-4) {                 // Si il reste encore 4 caractères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
+                String i0 = String.valueOf(mess.charAt(j));     // caractère à la position j
+                String i1 = String.valueOf(mess.charAt(j+1));   // caractère à la position j+1
+                if(i0.equals("\\") && i1.equals("x")) {   // Si les 2 valeurs à partir de j du message contiennent bien : \x   ..
+                    String hexaCode = String.format("%s%s", mess.charAt(j+2), mess.charAt(j+3));    // On récupère les 2 caractères hexa après le \x
+                    if(testHex(hexaCode)) {     // Si ses deux caractères sont bien des hexa ..
+                        codePointKey = Integer.parseInt(hexaCode,16);   // On récupère le décimal de cette valeur hexa (hexa qui a été convertie en décimal)
+                        j=j+3;  // On passe au caractère suivant en sautant les caractères qui correspondent aux valeurs hexa
+                    }
+                }
+            }
+            listOfDec.add(codePointKey); // On ajoute dans la liste le décimal du caractère à la position j du message
+        }
+        return listOfDec;
+    }
+
+    // Fonction qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
     public static String getCharacterByDecimal(int code) {
-        StringBuilder chararter = new StringBuilder();	    // String qui contiendra le caractère correspondant au code décimal
+        StringBuilder chararter = new StringBuilder();	    // Variable qui contiendra le caractère correspondant au code décimal
         if( code > 127 ) {                                  // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
-            chararter.append( EXTENDED[code - 128] );       // On récuprère le caractère correspondant dans la table EXTENDED
+            chararter.append( EXTENDED[code - 128] );       // On récupère le caractère correspondant dans la table EXTENDED
         } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
             String normalCharacter = Character.toString( (char) (code) );                                          // On récupère le caractère normal avec son décimal
-            String hexaOfNormalChar = "\\0x"+ Integer.toHexString( code | 0x10000).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x**** )
-            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caracère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
+            String hexaOfNormalChar = "\\x"+ Integer.toHexString( code | 0x100).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x** )
+            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caractère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
         }
         return chararter.toString();                        // Retourne le caractère correspondant sous forme de String
     }
 
-    // Fonction qui compare le décimal du caratère avec la liste de décimal des caractères étendus et :
-    // -- si les déicmaux sont identique, retoune le bon décimal du caractère correspondant de la table ASCII étendue
+    // Fonction qui compare le décimal du caractère avec la liste de décimal des caractères étendus et :
+    // -- si les décimaux sont identiques, retourne le bon décimal du caractère correspondant de la table ASCII étendue
     private static int getExtendChar(int code) {
         for(int i=0; i<DECIMALS.length; i++) {
             if(DECIMALS[i] == code) {
