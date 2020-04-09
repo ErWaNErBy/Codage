@@ -77,9 +77,9 @@ public class CesarActivity extends AppCompatActivity {
     }
 
     // Quand on appuie sur le bouton Crypter :
-    // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on convertir le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage
+    // - On récupère les valeurs de la zone de texte message et décalage si ils ne sont pas vides
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on converti le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage
     public void crypter(View v){
         txt = editTMessage.getText().toString();
         cle = editTDecalage.getText().toString();
@@ -92,9 +92,9 @@ public class CesarActivity extends AppCompatActivity {
     }
 
     // Quand on appuie sur le bouton Décrypter :
-    // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on convertir le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage (décalage négatif pour pouvoir reculer)
+    // - On récupère les valeurs de la zone de texte message et décalage si ils ne sont pas vides
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on converti le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage (décalage négatif pour pouvoir reculer)
     public void decrypter(View v){
         txt = editTMessage.getText().toString();
         cle = editTDecalage.getText().toString();
@@ -119,8 +119,8 @@ public class CesarActivity extends AppCompatActivity {
 
             int codePoint = listOfDec.get(i);   // Décimal du caractère à la position i de la liste
 
-            if (key > 255) key= key%256;            // Si la clé est supérieur à 255 (c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
-            if (key <0) key = (256-(-key))%256;     // Si la clé est inférieur à 0 on change la valeur pour qu'il part de la fin de la table ASCII étendue
+            if (key > 255) key= key%256;            // Si la clé est supérieure à 255 (c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
+            if (key <0) key = (256-(-key))%256;     // Si la clé est inférieure à 0 on change la valeur pour qu'il part de la fin de la table ASCII étendue
 
             // ---------------------------------- RECUPERATION DU CODE DECIMAL
 
