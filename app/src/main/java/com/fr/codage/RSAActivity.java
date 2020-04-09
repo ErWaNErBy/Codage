@@ -17,8 +17,23 @@ import java.util.stream.IntStream;
 
 public class RSAActivity extends AppCompatActivity {
 
+    /*
+     * Chiffrement RSA -
+     * 1. Choix de p et q : deux nombres premiers distincts
+     *
+     * 2. Calcul du produit p et q ===> n = p * q
+     *
+     * 3. Calcul de l'indicatrice d'Euler ===> phi(n) = (p - 1) * (q - 1)
+     *
+     * 4. Choix d'un entier naturel e < n
+     *
+     * 5. Calcul de d, inverse de e modulo phi(n)
+     */
+
+    // Variables qui servent au choix entre crypter ou déchiffrer un message
     public static final int ENCRYPT =  1;
     public static final int DECRYPT = -1;
+
     public EditText editTMessage, editTP, editTQ;
     public TextView result, detail;
     public static String txt, p, q;
@@ -94,6 +109,12 @@ public class RSAActivity extends AppCompatActivity {
         return true;
     }
 
+    /* Fonction qui calcule le pgcd entre deux nombres
+     *
+     * Paramètres : deux entiers a et b
+     * Cette fonction servira à déterminer "e" de la clé publique
+     *
+     * */
     public static int pgcd(int a, int b) {
         int r = 0;
         while(b != 0) {
@@ -104,6 +125,12 @@ public class RSAActivity extends AppCompatActivity {
         return a;
     }
 
+    /* Fonction qui calcule l'inverse de e modulo phi(n)
+     *
+     * Paramètres : deux entiers la clé publique "e" calculé précédemment et l'indicatrice d'Euler "phi-n"
+     * Cette fonction sert à déterminer "d" de la clé privée
+     *
+     * */
     public static int inverMod(int e, int phi_n) {
         int r = 1, i = 2;
         while(r == 1) {
@@ -125,27 +152,33 @@ public class RSAActivity extends AppCompatActivity {
         return 0;
     }
 
-
+    /* Fonction qui permet de décomposer le message fourni en blocs inférieurs strictement à n
+     *
+     *
+     * Paramètres : deux entiers le message "m" et "n" le produit de p et q"
+     *
+     *
+     * */
     public static String[] bloc(int m, int n) {
-        String res = Integer.toString(m);
-        ArrayList<String> l = new ArrayList();
+        String res = Integer.toString(m);					// On convertit l'entier "m" en string
+        ArrayList<String> l = new ArrayList();				// Liste qui sert à stocker la chaine de caractère
 
-        if(m < n) {
+        if(m < n) {											// Si la valeur de "m" est inférieure à n alors on l'ajoute à la liste
             l.add(Integer.toString(m));
             return l.toArray(new String[1]);
-        } else {
-            int debut = 0;
-            int fin = res.length();
+        } else {											// Sinon on décale la fin de lecture de la chaine jusqu'à ce qu'on trouve un "m" plus petit que "n"
+            int debut = 0;									// Index de début
+            int fin = res.length();							// Index de fin
 
             while (debut != fin) {
                 String index = res.substring(debut, fin);
 
-                if(Integer.parseInt(index) < n) {
-                    l.add(res.substring(debut,fin));
-                    debut = fin;
-                    fin = res.length();
+                if(Integer.parseInt(index) < n) {			// Si la valeur de "m" est inférieure à "n"
+                    l.add(res.substring(debut,fin));		// alors on ajoute à la liste le résultat correspondant aux positions de "debut" et "fin"
+                    debut = fin;							// On place alors le "début" de lecture à la place de "fin"
+                    fin = res.length();						// et la "fin" prend la nouvelle longueur de la chaine actuelle
                 } else {
-                    fin--;
+                    fin--;									// sinon on fait reculer "fin"
                 }
             }
         }
@@ -153,26 +186,45 @@ public class RSAActivity extends AppCompatActivity {
 
     }
 
-    public static BigInteger crypt(BigInteger m, BigInteger e, BigInteger n) {
-        return m.modPow(e, n);
-    }
+    /*
+     * Fonctions "crypt" et "decrypt"
+     *
+     * Utilisation de BigInteger pour représenter les entiers sans limitations de taille
+     * La classe BigInteger offre en plus des opérations habituelles sur les entiers,
+     * des opérations de calcul en arithmétique modulaire, calcul du Pgcd, génération
+     * de nombres premiers, test pour savoir si un entier est premier, etc...
+     *
+     *
+     * Paramètres :
+     * - le message   "m"
+     * - la valeur de "e"
+     * - la valeur de "n"
+     *
+     *
+     */
+    public static BigInteger crypt(BigInteger m, BigInteger e, BigInteger n) { return m.modPow(e, n); }
+    public static BigInteger decrypt(BigInteger m, BigInteger d, BigInteger n) { return m.modPow(d, n); }
 
-    public static BigInteger decrypt(BigInteger m, BigInteger d, BigInteger n) {
-        return m.modPow(d, n);
-    }
-
-
+    /*
+     * Fonction principale faisant appel aux fonctions précédentes
+     */
     public void RSA(BigInteger p, BigInteger q, BigInteger m, int cryptingMethod) {
         trace.setLength(0);
-        StringBuilder res = new StringBuilder();
+        StringBuilder res = new StringBuilder();    // Variable qui contient le résultat du message
 
-        BigInteger n = p.multiply(q);
+        BigInteger n = p.multiply(q);               // On multiplie p et q à l'aide la méthode multiply
+
+        // Calcul de l'indicatrice d'Euler
         BigInteger phi_n = (p.subtract(new BigInteger("1")).multiply(q.subtract(new BigInteger("1")))  );
 
         trace.append("------------------- TRACE -------------------\n");
         trace.append("n = p x q = ").append(n).append("\n");
         trace.append("φ(n) = (p - 1) x (q - 1) = ").append(phi_n).append("\n");
 
+        /*
+         * On regarde qui entre p et q est plus grand
+         * Pour la méthode Brute force
+         */
         BigInteger e;
         if(p.intValue() > q.intValue()) {
             e = p.add(new BigInteger("1"));
@@ -180,19 +232,29 @@ public class RSAActivity extends AppCompatActivity {
             e = q.add(new BigInteger("1"));
         }
 
+        /*
+         * Cacul du pgcd pour déterminer "e"
+         */
         while (pgcd(phi_n.intValue(), e.intValue()) != 1 ) {
             e = e.add(new BigInteger("1"));
         }
         trace.append("e premier avec φ(n) = ").append(e).append("\n");
 
-        int d = inverMod(e.intValue(), phi_n.intValue());
+        int d = inverMod(e.intValue(), phi_n.intValue());   // On détermine "d" grâce la méthode d'Euclide étendu
 
         trace.append("d = ").append(inverMod(e.intValue(), phi_n.intValue())).append("\n");
 
-        String[] maListe = bloc(m.intValue(),n.intValue());
+        String[] maListe = bloc(m.intValue(),n.intValue()); // Liste qui contient le message décomposé en blocs inférieur à n
 
         trace.append("Bloc du message = ").append(Arrays.toString(bloc(m.intValue(), n.intValue()))).append("\n");
         trace.append("--------------------------------\n");
+
+        /*
+         * On parcourt la liste
+         * Et on applique soit
+         * - la méthode pour crypter le message 	: fonction crypt(s,e,n)
+         * - la méthode pour décrypter le message 	: fonction decrypt(s,d,n)
+         */
         for (String value : maListe) {
             BigInteger s = new BigInteger(value);
             if (cryptingMethod == 1) {
@@ -201,6 +263,7 @@ public class RSAActivity extends AppCompatActivity {
                 res.append(decrypt(s, BigInteger.valueOf(d), n));
             }
         }
+        // Affichage du résultat et de la trace
         result.setText(res.toString());
         detail.setText(trace.toString());
     }
