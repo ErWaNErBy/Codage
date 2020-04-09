@@ -1,7 +1,6 @@
 package com.fr.codage;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +8,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AtbashActivity extends AppCompatActivity {
 
@@ -91,34 +93,57 @@ public class AtbashActivity extends AppCompatActivity {
 
         StringBuilder messEncrypt = new StringBuilder();	// Message résultat qui contiendra le message crypter / décrypter
 
-        for (int i = 0; i < mess.length(); i++) {   // Analyse chaque caractère du message saisi
+        List<Integer> listOfDec = getListOfDec(mess);       // Liste qui contient les décimaux de chaque caractère du message
 
-            int codePoint = mess.codePointAt(i);	// Décimal du caractère à la position i du message saisi
-            // [ Verifie si la message ne contient pas de caractère hexa de la forme \0x****
-            if(i<=mess.length()-7) {    // Si il reste encore 7 cactères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
-                String i0 = String.valueOf(mess.charAt(i));
-                String i1 = String.valueOf(mess.charAt(i+1));
-                String i2 = String.valueOf(mess.charAt(i+2));
-                if(i0.equals("\\") && i1.equals("0") && i2.equals("x")) {   // Si les 3 valeurs à partir de i du message contient bien : \0x   ..
-                    String hexaCode = String.format("%s%s%s%s", mess.charAt(i+3), mess.charAt(i+4), mess.charAt(i+5), mess.charAt(i+6));    // On récupère les 4 caractères hexa après le \0x
-                    codePoint = Integer.parseInt(hexaCode,16);    // On change le décimal avec la nouvelle valeur (on converti l'hexa en décimal)
-                    i=i+6;  // On passe au caractère suivant
-                }
-            }
-            // ]
+        for (int i = 0; i < listOfDec.size(); i++) {        // Analyse chaque décimaux de la liste
 
             // ---------------------------------- RECUPERATION DU CODE DECIMAL
 
-            if(codePoint > 127) {                               // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
-                codePoint = getExtendChar(codePoint);           // On éxécute getExtendChar() avec le décimal du caratère et récupère le bon décimal (plus de détail dans la fonction correspondante)
-            }
-            reverseCodePoint = 255 - codePoint;                 // Inverse le codePoint pour pour récupérer le caractère opposé
+            int codePoint = listOfDec.get(i);   // Décimal du caractère à la position i de la liste
+
+            reverseCodePoint = 255 - codePoint; // Inverse le décimal du caractère pour récupérer le caractère opposé
 
             // ---------------------------------- AFFICHAGE
 
-            messEncrypt.append(getCharacterByDecimal(reverseCodePoint));      // On éxécute la fonction getCharacterByDecimal() avec le décimal du caractère inversé qui retounera le caractère correspondant
+            // On éxécute la fonction getCharacterByDecimal() avec le décimal du caractère inversé qui retounera le caractère qui lui correspond et l'ajoute dans le message résultat
+            messEncrypt.append(getCharacterByDecimal(reverseCodePoint));
         }
         result.setText(messEncrypt.toString());     // Affiche le message crypter / décrypter dans la zone de texte result
+    }
+
+    // Fonction qui vérifie si une chaine de caractère est bien un hexa
+    private static boolean testHex(String value) {
+        boolean res;
+        try {
+            new BigInteger(value,16);
+            res = true;
+        } catch (NumberFormatException e) {
+            res = false;
+        }
+        return (res);
+    }
+
+    // Fonction qui prend en paramètre une chaine de caractère et qui retourne une liste contenant les valeurs décimales de chaques caractères
+    public static List<Integer> getListOfDec(String mess){
+        List<Integer> listOfDec = new ArrayList<>();             // list qui conteindra les décimaux des caractères du message saisi
+        for(int j = 0; j < mess.length(); j++) {             // Analyse chaque caractère du message saisi
+            int codePointKey = mess.codePointAt( j );        // On récupère le décimal du caractère du message
+            // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue),on éxécute getExtendChar() avec le décimal du caratère et récupère le bon décimal
+            if(codePointKey > 127)  codePointKey = getExtendChar(codePointKey);
+            if(j<=mess.length()-3) {                 // Si il reste encore 7 cactères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
+                String i0 = String.valueOf(mess.charAt(j));
+                String i1 = String.valueOf(mess.charAt(j+1));
+                if(i0.equals("\\") && i1.equals("x")) {   // Si les 3 valeurs à partir de i du message contient bien : \0x   ..
+                    String hexaCode = String.format("%s%s", mess.charAt(j+2), mess.charAt(j+3));    // On récupère les 4 caractères hexa après le \0x
+                    if(testHex(hexaCode)) {
+                        codePointKey = Integer.parseInt(hexaCode,16);   // On change le décimal avec la nouvelle valeur (on converti l'hexa en décimal)
+                        j=j+3;  // On passe au caractère suivant
+                    }
+                }
+            }
+            listOfDec.add(codePointKey); // On ajoute dans la liste le décimal du caractère du message saisi
+        }
+        return listOfDec;
     }
 
     // Fontion qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
@@ -128,7 +153,7 @@ public class AtbashActivity extends AppCompatActivity {
             chararter.append( EXTENDED[code - 128] );       // On récuprère le caractère correspondant dans la table EXTENDED
         } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
             String normalCharacter = Character.toString( (char) (code) );                                          // On récupère le caractère normal avec son décimal
-            String hexaOfNormalChar = "\\0x"+ Integer.toHexString( code | 0x10000).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x**** )
+            String hexaOfNormalChar = "\\x"+ Integer.toHexString( code | 0x100).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x**** )
             chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caracère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
         }
         return chararter.toString();                        // Retourne le caractère correspondant sous forme de String
