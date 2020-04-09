@@ -8,6 +8,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CesarActivity extends AppCompatActivity {
 
@@ -16,7 +19,7 @@ public class CesarActivity extends AppCompatActivity {
     public static String txt, cle;
     public static int key, codePointDecal;
 
-    // Liste des caractères étendus sont forme d'hexa
+    // Liste des caractères étendus sous forme d'hexa
     public static final char[] EXTENDED = {         '\u00C7', '\u00FC', '\u00E9', '\u00E2',
             '\u00E4', '\u00E0', '\u00E5', '\u00E7', '\u00EA', '\u00EB', '\u00E8', '\u00EF',
             '\u00EE', '\u00EC', '\u00C4', '\u00C5', '\u00C9', '\u00E6', '\u00C6', '\u00F4',
@@ -64,7 +67,7 @@ public class CesarActivity extends AppCompatActivity {
         result = findViewById(R.id.result);
     }
 
-    // Réduit le clavier quand on touche autre chose qu'un champs à saisir
+    // Réduit le clavier quand on touche autre chose qu'un champ à saisir
     public void closeKeyboard(View v) {
         View view = this.getCurrentFocus();
         if(view != null){
@@ -73,7 +76,7 @@ public class CesarActivity extends AppCompatActivity {
         }
     }
 
-    // Quand on appuie sur le bouton crypter :
+    // Quand on appuie sur le bouton Crypter :
     // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide
     // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
     // - Sinon on convertir le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage
@@ -88,7 +91,7 @@ public class CesarActivity extends AppCompatActivity {
         }
     }
 
-    // Quand on appuie sur le bouton decrypter :
+    // Quand on appuie sur le bouton Décrypter :
     // - On récupèrer les valeurs de la zone de texte message et décalage si il ne sont pas vide
     // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
     // - Sinon on convertir le décalage en un int et on lance la fonction cesar() avec en paramètre le message et le décalage (décalage négatif pour pouvoir reculer)
@@ -103,63 +106,87 @@ public class CesarActivity extends AppCompatActivity {
         }
     }
 
-    // Fonction qui crypte ou décrypte avec la méthode de cryptage César et qui prend en paramètre un message à crypter/décrypter et le décalage de caractère
+    // Fonction qui crypte ou décrypte avec la méthode de cryptage César et qui prend en paramètre un message à crypter/décrypter et le décalage de caractère qu'on souhaite appliquer
     public void cesar(String mess, int key){
 
-        StringBuilder messEncrypt = new StringBuilder();	// Message résultat qui contiendra le message crypter / décrypter
+        StringBuilder messEncrypt = new StringBuilder();	// Message résultat qui contiendra le message crypté / décrypté
 
-        for (int i = 0; i < mess.length(); i++) {   // Analyse chaque caractère du message saisi
+        List<Integer> listOfDec = getListOfDec(mess);       // Liste qui contient les décimaux de chaque caractère du message
 
-            int codePoint = mess.codePointAt(i);	// Décimal du caractère à la position i du message saisi
+        for (int i = 0; i < listOfDec.size(); i++) {        // Analyse chaque décimal de la liste
 
-            // [ Verifie si la message ne contient pas de caractère hexa de la forme \0x****
-            if(i<=mess.length()-7) {    // Si il reste encore 7 cactères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
-                String i0 = String.valueOf(mess.charAt(i));
-                String i1 = String.valueOf(mess.charAt(i+1));
-                String i2 = String.valueOf(mess.charAt(i+2));
-                if(i0.equals("\\") && i1.equals("0") && i2.equals("x")) {   // Si les 3 valeurs à partir de i du message contient bien : \0x   ..
-                    String hexaCode = String.format("%s%s%s%s", mess.charAt(i+3), mess.charAt(i+4), mess.charAt(i+5), mess.charAt(i+6));    // On récupère les 4 caractères hexa après le \0x
-                    codePoint = Integer.parseInt(hexaCode,16);    // On change le décimal avec la nouvelle valeur (on converti l'hexa en décimal)
-                    i=i+6;  // On passe au caractère suivant
-                }
-            }
-            // ]
+            // ---------------------------------- RECUPERATION DU CODE DECIMAL
+
+            int codePoint = listOfDec.get(i);   // Décimal du caractère à la position i de la liste
 
             if (key > 255) key= key%256;            // Si la clé est supérieur à 255 (c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
             if (key <0) key = (256-(-key))%256;     // Si la clé est inférieur à 0 on change la valeur pour qu'il part de la fin de la table ASCII étendue
 
             // ---------------------------------- RECUPERATION DU CODE DECIMAL
 
-            if(codePoint > 127) {                               // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
-                int newCodePoint = getExtendChar(codePoint);    // On éxécute getExtendChar() avec le décimal du caratère et récupère le bon décimal (plus de détail dans la fonction correspondante)
-                codePointDecal = newCodePoint + key;            // On récupère la bonne valeur du décimal + le décalage
-            }else {                                             // Sinon (c'est un caractère de la table ASCII normal) ..
-                codePointDecal = codePoint + key;               // On récupère le décimal + le décalage
-            }
+            codePointDecal = codePoint + key;               // On récupère le décimal décalé en faisant la somme du décimal et du décalage
 
-            if(codePointDecal > 255) codePointDecal = codePointDecal%256;   // Si le décimal décalé est supérieur à 255(c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
+            // Si le décimal décalé est supérieur à 255(c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
+            if(codePointDecal > 255) codePointDecal = codePointDecal%256;
 
             // ---------------------------------- AFFICHAGE
-            messEncrypt.append(getCharacterByDecimal(codePointDecal));      // On éxécute la fonction getCharacterByDecimal() avec le décimal du caractère décalé qui retounera le caractère correspondant
+
+            // On exécute la fonction getCharacterByDecimal() avec le décimal du caractère inversé qui retournera le caractère qui lui correspond et l'ajoute dans le message résultat
+            messEncrypt.append(getCharacterByDecimal(codePointDecal));
         }
-        result.setText(messEncrypt.toString());     // Affiche le message crypter / décrypter dans la zone de texte result
+        result.setText(messEncrypt.toString());     // Affiche le message crypté / décrypté dans la zone de texte result
     }
 
-    // Fontion qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
+    // Fonction qui vérifie si une chaîne de caractères est bien un hexa
+    private static boolean testHex(String value) {
+        boolean res;
+        try {
+            new BigInteger(value,16);
+            res = true;
+        } catch (NumberFormatException e) {
+            res = false;
+        }
+        return (res);
+    }
+
+    // Fonction qui prend en paramètre une chaîne de caractères et qui retourne une liste contenant les valeurs décimales de chaque caractère
+    public static List<Integer> getListOfDec(String mess){
+        List<Integer> listOfDec = new ArrayList<>();             // Liste qui contiendra les décimaux des caractères du message saisi
+        for(int j = 0; j < mess.length(); j++) {             // Analyse chaque caractère du message saisi
+            int codePointKey = mess.codePointAt( j );        // On récupère le décimal du caractère à la position j du message
+            // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue), on exécute getExtendChar() avec le décimal du caractère et récupère le bon décimal
+            if(codePointKey > 127)  codePointKey = getExtendChar(codePointKey);
+            if(j<=mess.length()-4) {                 // Si il reste encore 4 caractères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
+                String i0 = String.valueOf(mess.charAt(j));     // caractère à la position j
+                String i1 = String.valueOf(mess.charAt(j+1));   // caractère à la position j+1
+                if(i0.equals("\\") && i1.equals("x")) {   // Si les 2 valeurs à partir de j du message contiennent bien : \x   ..
+                    String hexaCode = String.format("%s%s", mess.charAt(j+2), mess.charAt(j+3));    // On récupère les 2 caractères hexa après le \x
+                    if(testHex(hexaCode)) {     // Si ses deux caractères sont bien des hexa ..
+                        codePointKey = Integer.parseInt(hexaCode,16);   // On récupère le décimal de cette valeur hexa (hexa qui a été convertie en décimal)
+                        j=j+3;  // On passe au caractère suivant en sautant les caractères qui correspondent aux valeurs hexa
+                    }
+                }
+            }
+            listOfDec.add(codePointKey); // On ajoute dans la liste le décimal du caractère à la position j du message
+        }
+        return listOfDec;
+    }
+
+    // Fonction qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
     public static String getCharacterByDecimal(int code) {
-        StringBuilder chararter = new StringBuilder();	    // String qui contiendra le caractère correspondant au code décimal
+        StringBuilder chararter = new StringBuilder();	    // Variable qui contiendra le caractère correspondant au code décimal
         if( code > 127 ) {                                  // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
-            chararter.append( EXTENDED[code - 128] );       // On récuprère le caractère correspondant dans la table EXTENDED
+            chararter.append( EXTENDED[code - 128] );       // On récupère le caractère correspondant dans la table EXTENDED
         } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
             String normalCharacter = Character.toString( (char) (code) );                                          // On récupère le caractère normal avec son décimal
-            String hexaOfNormalChar = "\\0x"+ Integer.toHexString( code | 0x10000).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x**** )
-            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caracère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
+            String hexaOfNormalChar = "\\x"+ Integer.toHexString( code | 0x100).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x** )
+            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caractère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
         }
         return chararter.toString();                        // Retourne le caractère correspondant sous forme de String
     }
 
-    // Fonction qui compare le décimal du caratère avec la liste de décimal des caractères étendus et :
-    // -- si les déicmaux sont identique, retoune le bon décimal du caractère correspondant de la table ASCII étendue
+    // Fonction qui compare le décimal du caractère avec la liste de décimal des caractères étendus et :
+    // -- si les décimaux sont identiques, retourne le bon décimal du caractère correspondant de la table ASCII étendue
     private static int getExtendChar(int code) {
         for(int i=0; i<DECIMALS.length; i++) {
             if(DECIMALS[i] == code) {

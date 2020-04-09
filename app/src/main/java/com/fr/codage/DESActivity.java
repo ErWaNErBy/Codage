@@ -308,7 +308,7 @@ public class DESActivity extends AppCompatActivity {
         detail.setText(trace.toString());
     }
 
-    // Fonction qui prend en paramètre une chaine de caractère et qui retourne une liste contenant les valeurs décimaux de chaques caractères
+    // Fonction qui prend en paramètre une chaine de caractère et qui retourne une liste contenant les valeurs décimales de chaques caractères
     public List<Integer> getListOfDec(String mess){
         List<Integer> listOfDec = new ArrayList<>();             // list qui conteindra les décimaux des caractères du message saisi
         for(int j = 0; j < mess.length(); j++) {             // Analyse chaque caractère du message saisi
@@ -375,7 +375,7 @@ public class DESActivity extends AppCompatActivity {
         return 0;
     }
 
-    // Vérifie si une chaine de caractère est bien un hexa
+    // Fonction qui vérifie si une chaine de caractère est bien un hexa
     private static boolean testHex(String value) {
         boolean res;
         try {
@@ -511,9 +511,9 @@ public class DESActivity extends AppCompatActivity {
         newRightPart = xor(initLeftPart, dbox);
 
         Log.d(DETAILS,"L1 = "+hexaToBin(newLeftPart)+" = "+newLeftPart);
-        trace.append("L1 = ").append(hexaToBin(newLeftPart)).append(" = ").append(newLeftPart).append("\n");
+        trace.append("L").append(tour+1).append(" = ").append(hexaToBin(newLeftPart)).append(" = ").append(newLeftPart).append("\n");
         Log.d(DETAILS,"R1 = "+ hexaToBin(newRightPart)+" = "+newRightPart);
-        trace.append("R1 = ").append(hexaToBin(newRightPart)).append(" = ").append(newRightPart).append("\n");
+        trace.append("R").append(tour+1).append(" = ").append(hexaToBin(newRightPart)).append(" = ").append(newRightPart).append("\n");
         Log.d(DETAILS,"--------------------------------");
         trace.append("--------------------------------\n");
         // inversion de la partie gauche et droite
