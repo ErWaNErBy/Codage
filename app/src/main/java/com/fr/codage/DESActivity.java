@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +142,7 @@ public class DESActivity extends AppCompatActivity {
             1, 2, 2, 2, 2, 2, 2, 1
     };
 
-    // Liste des caractères étendus sont forme d'hexa
+    // Liste des caractères étendus sous forme d'hexa
     public static final char[] EXTENDED = {         '\u00C7', '\u00FC', '\u00E9', '\u00E2',
             '\u00E4', '\u00E0', '\u00E5', '\u00E7', '\u00EA', '\u00EB', '\u00E8', '\u00EF',
             '\u00EE', '\u00EC', '\u00C4', '\u00C5', '\u00C9', '\u00E6', '\u00C6', '\u00F4',
@@ -192,14 +191,23 @@ public class DESActivity extends AppCompatActivity {
         detail = findViewById(R.id.detail);
         hexaMode = findViewById(R.id.switch1);
 
-        detail.setMovementMethod(new ScrollingMovementMethod());    // Activer le scroll du textViev pour voir la trace complète
+        detail.setMovementMethod(new ScrollingMovementMethod());    // Activer le défilement du textView pour voir la trace complète
     }
 
-    // Quand on appuie sur le bouton crypter :
-    // - On récupèrer les valeurs de la zone de texte message et de la clé si il ne sont pas vide
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction getValDES() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici crypter
-    //     qui va d'abord vérifier quelle valeur a été saisite
+    // Réduit le clavier quand on touche autre chose qu'un champ à saisir
+    public void closeKeyboard(View v) {
+        View view = this.getCurrentFocus();
+        if(view != null){
+            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    // Quand on appuie sur le bouton Crypter :
+    // - On récupère les valeurs de la zone de texte message et de la clé si ils ne sont pas vides
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on lance la fonction getValDES() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : crypter
+    //     qui va d'abord vérifier quelle valeur a été saisie
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void crypter(View v){
         trace.setLength(0);
@@ -212,11 +220,11 @@ public class DESActivity extends AppCompatActivity {
         }
     }
 
-    // Quand on appuie sur le bouton decrypter :
-    // - On récupèrer les valeurs de la zone de texte message et de la clé si il ne sont pas vide
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction execDES() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici decrypter
-    //     qui va d'abord vérifier quelle valeur a été saisite
+    // Quand on appuie sur le bouton Décrypter :
+    // - On récupère les valeurs de la zone de texte message et de la clé si ils ne sont pas vides
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on lance la fonction execDES() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : décrypter
+    //     qui va d'abord vérifier quelle valeur a été saisie
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void decrypter(View v){
         trace.setLength(0);
@@ -230,17 +238,21 @@ public class DESActivity extends AppCompatActivity {
     }
 
     // Fonction qui prend en paramètre le message, le message clé et la méthode de cryptage et qui va voir via le bouton switch si le bloc est une chaîne
-    //    hexa ou une chaine de la table ASCII et qui va ensuite éxécuter le cryptage avec les bonnes valeurs binaires converties
+    //    hexa ou une chaine de la table ASCII et qui va ensuite exécuter le cryptage avec les bonnes valeurs binaires converties
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void getValDES(String bloc, String cle, int cryptingMethod){
         // Si la chaîne et la clé sont bien des hexa alors il exécute directement la fonction execDES() pour commencer le cryptage et affiche ensuite le résultat
         // Sinon on envoi une bulle d'info pour préciser que les champs ne sont pas conforme
+        Log.d(DETAILS, "-------------------------------------- TRACE --------------------------------------");
+        trace.append("-------------------------------------- TRACE --------------------------------------\n");
         if(hexaMode.isChecked()){
             if(testHex(bloc) && testHex(cle)){
                 while(bloc.length()%16 != 0) bloc += "0";
                 String execution ="";
                 StringBuilder  messEncrypt = new StringBuilder();
-                for(int i=0;i<bloc.length();i +=16) {
+                for(int i=0;i<bloc.length();i +=16) {   // Segmente le message en bloc de 16 et les éxécute un à un
+                    Log.d(DETAILS, "Bloc message "+((i+16)/16) );
+                    trace.append("-------------------------------- Bloc message ").append((i + 16) / 16).append("\n");
                     String a = bloc.substring(i, i + 16);
                     execution = execDES(a, cle, cryptingMethod);
                     messEncrypt.append(execution);
@@ -268,26 +280,29 @@ public class DESActivity extends AppCompatActivity {
                         while(hexToBinary.length() != 8) hexToBinary = "0" + hexToBinary;   // Complète les 0 manquante pour faire 8 bits
                         list.add( hexToBinary );                                            // L'ajoute à la liste
                     }
-                    j= j+7;                     // Saute les caractères déjà analyse dans la deuxième boucle
+                    j= j+7;                     // Saute les caractères déjà analysé dans la deuxième boucle
                     allList.add(list);          // Et ajoute la liste contenant les 8 octets
                 }
                 // ]
 
                 // [Création du nouveau bloc complet avec toutes les valeurs binaires de ses caractères
+                Log.d(DETAILS,"Liste des groupements de bloc de 64 bits :");
                 StringBuilder newBloc = new StringBuilder();
                 for(int i=0; i< allList.size(); i++) {
                     for(int j=0; j<allList.get(i).size();j++ ) {
-                        //System.out.print(allList.get(i).get(j)+" ");
+                        Log.d(DETAILS,allList.get(i).get(j)+" ");
                         newBloc.append(allList.get(i).get(j));
                     }
-                    //System.out.println(" ");
+                    Log.d(DETAILS," ");
                 }
-                //System.out.println(newBloc.toString());
+                Log.d(DETAILS,"Binaire du message : "+newBloc.toString());
                 // ]
 
                 // [ Boucle qui crypte / décrypte chaque morceaux de 64 bits du bloc et qui ajoute au fur et à mesure les valeurs crypter dans une variable resultant qui sera ensuite affiché
                 StringBuilder messEncrypt = new StringBuilder();
-                for(int i=0;i<newBloc.length();i +=64) {
+                for(int i=0;i<newBloc.length();i +=64) {    // Segmente le message en bloc de 64 bits et les éxécute un à un
+                    Log.d(DETAILS, "-------------------------------- Bloc message "+((i+64)/64) );
+                    trace.append("-------------------------------- Bloc message ").append((i + 64) / 64).append("\n");
                     String a = binToHexa(newBloc.toString().substring(i,i+64));
                     String exe;
                     if(cryptingMethod == 1){
@@ -308,27 +323,39 @@ public class DESActivity extends AppCompatActivity {
         detail.setText(trace.toString());
     }
 
-    // Fonction qui prend en paramètre une chaine de caractère et qui retourne une liste contenant les valeurs décimales de chaques caractères
-    public List<Integer> getListOfDec(String mess){
-        List<Integer> listOfDec = new ArrayList<>();             // list qui conteindra les décimaux des caractères du message saisi
+    // Fonction qui vérifie si une chaîne de caractères est bien un hexa
+    private static boolean testHex(String value) {
+        boolean res;
+        try {
+            new BigInteger(value,16);
+            res = true;
+        } catch (NumberFormatException e) {
+            res = false;
+        }
+        return (res);
+    }
+
+    // Fonction qui prend en paramètre une chaîne de caractères et qui retourne une liste contenant les valeurs décimales de chaque caractère
+    public static List<Integer> getListOfDec(String mess){
+        List<Integer> listOfDec = new ArrayList<>();             // Liste qui contiendra les décimaux des caractères du message saisi
         for(int j = 0; j < mess.length(); j++) {             // Analyse chaque caractère du message saisi
-            int codePointKey = mess.codePointAt( j );        // On récupère le décimal du caractère du message
-            // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue),on éxécute getExtendChar() avec le décimal du caratère et récupère le bon décimal
+            int codePointKey = mess.codePointAt( j );        // On récupère le décimal du caractère à la position j du message
+            // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue), on exécute getExtendChar() avec le décimal du caractère et récupère le bon décimal
             if(codePointKey > 127)  codePointKey = getExtendChar(codePointKey);
-            if(j<=mess.length()-7) {                 // Si il reste encore 7 cactères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
-                String i0 = String.valueOf(mess.charAt(j));
-                String i1 = String.valueOf(mess.charAt(j+1));
-                String i2 = String.valueOf(mess.charAt(j+2));
-                if(i0.equals("\\") && i1.equals("0") && i2.equals("x")) {   // Si les 3 valeurs à partir de i du message contient bien : \0x   ..
-                    String hexaCode = String.format("%s%s%s%s", mess.charAt(j+3), mess.charAt(j+4), mess.charAt(j+5), mess.charAt(j+6));    // On récupère les 4 caractères hexa après le \0x
-                    codePointKey = Integer.parseInt(hexaCode,16);   // On change le décimal avec la nouvelle valeur (on converti l'hexa en décimal)
-                    j=j+6;  // On passe au caractère suivant
+            if(j<=mess.length()-4) {                 // Si il reste encore 4 caractères avant la fin du message (c'est_à-dire, qu'il y a possibilité que ça soit un caractère hexa)
+                String i0 = String.valueOf(mess.charAt(j));     // caractère à la position j
+                String i1 = String.valueOf(mess.charAt(j+1));   // caractère à la position j+1
+                if(i0.equals("\\") && i1.equals("x")) {   // Si les 2 valeurs à partir de j du message contiennent bien : \x   ..
+                    String hexaCode = String.format("%s%s", mess.charAt(j+2), mess.charAt(j+3));    // On récupère les 2 caractères hexa après le \x
+                    if(testHex(hexaCode)) {     // Si ses deux caractères sont bien des hexa ..
+                        codePointKey = Integer.parseInt(hexaCode,16);   // On récupère le décimal de cette valeur hexa (hexa qui a été convertie en décimal)
+                        j=j+3;  // On passe au caractère suivant en sautant les caractères qui correspondent aux valeurs hexa
+                    }
                 }
             }
-            listOfDec.add(codePointKey); // On ajoute dans la liste le décimal du caractère du message saisi
+            listOfDec.add(codePointKey); // On ajoute dans la liste le décimal du caractère à la position j du message
         }
         while(listOfDec.size()%8 != 0) listOfDec.add(0);
-
         return listOfDec;
     }
 
@@ -351,21 +378,21 @@ public class DESActivity extends AppCompatActivity {
         return res;
     }
 
-    // Fontion qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
+    // Fonction qui prend en paramètre un code décimal et qui retourne le bon caractère qui le correspond
     public static String getCharacterByDecimal(int code) {
-        StringBuilder chararter = new StringBuilder();	    // String qui contiendra le caractère correspondant au code décimal
+        StringBuilder chararter = new StringBuilder();	    // Variable qui contiendra le caractère correspondant au code décimal
         if( code > 127 ) {                                  // Si le décimal du caractère est supérieur à 127 (c'est-à-dire, si c'est un caractère de la table ASCII étendue) ..
-            chararter.append( EXTENDED[code - 128] );       // On récuprère le caractère correspondant dans la table EXTENDED
+            chararter.append( EXTENDED[code - 128] );       // On récupère le caractère correspondant dans la table EXTENDED
         } else {                                                    // Sinon (c'est un caractère de la table ASCII normal) ..
             String normalCharacter = Character.toString( (char) (code) );                                          // On récupère le caractère normal avec son décimal
-            String hexaOfNormalChar = "\\0x"+ Integer.toHexString( code | 0x10000).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x**** )
-            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caracère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
+            String hexaOfNormalChar = "\\x"+ Integer.toHexString( code | 0x100).substring(1);                // On récupère l'hexa du caractère normal ( de la forme \0x** )
+            chararter.append(normalCharacter.replaceAll("\\p{C}", "\\"+hexaOfNormalChar) );     // On ajoute dans le message résultat le caractère normal de la table ASCII normal et si il n'est pas affichable on ajoute à la place son hexa
         }
         return chararter.toString();                        // Retourne le caractère correspondant sous forme de String
     }
 
-    // Fonction qui compare le décimal du caratère avec la liste de décimal des caractères étendus et :
-    // -- si les déicmaux sont identique, retoune le bon décimal du caractère correspondant de la table ASCII étendue
+    // Fonction qui compare le décimal du caractère avec la liste de décimal des caractères étendus et :
+    // -- si les décimaux sont identiques, retourne le bon décimal du caractère correspondant de la table ASCII étendue
     private static int getExtendChar(int code) {
         for(int i=0; i<DECIMALS.length; i++) {
             if(DECIMALS[i] == code) {
@@ -373,18 +400,6 @@ public class DESActivity extends AppCompatActivity {
             }
         }
         return 0;
-    }
-
-    // Fonction qui vérifie si une chaine de caractère est bien un hexa
-    private static boolean testHex(String value) {
-        boolean res;
-        try {
-            BigInteger hex = new BigInteger(value,16);
-            res = true;
-        } catch (NumberFormatException e) {
-            res = false;
-        }
-        return (res);
     }
 
     // Fonction qui prend en paramètre une table de permutation et un hexa et qui retourne la l'hexa permuté
@@ -510,9 +525,9 @@ public class DESActivity extends AppCompatActivity {
         // xor
         newRightPart = xor(initLeftPart, dbox);
 
-        Log.d(DETAILS,"L1 = "+hexaToBin(newLeftPart)+" = "+newLeftPart);
+        Log.d(DETAILS,"L"+(tour+1)+" = "+hexaToBin(newLeftPart)+" = "+newLeftPart);
         trace.append("L").append(tour+1).append(" = ").append(hexaToBin(newLeftPart)).append(" = ").append(newLeftPart).append("\n");
-        Log.d(DETAILS,"R1 = "+ hexaToBin(newRightPart)+" = "+newRightPart);
+        Log.d(DETAILS,"R"+(tour+1)+" = "+ hexaToBin(newRightPart)+" = "+newRightPart);
         trace.append("R").append(tour+1).append(" = ").append(hexaToBin(newRightPart)).append(" = ").append(newRightPart).append("\n");
         Log.d(DETAILS,"--------------------------------");
         trace.append("--------------------------------\n");
@@ -531,7 +546,7 @@ public class DESActivity extends AppCompatActivity {
         // Permutation initiale
         Log.d(DETAILS, "BinOfBloc : " + hexaToBin(bloc));
         String permutInitiale = permutation(tablePermutInitiale, bloc);
-        trace.append("------------------- TRACE -------------------\n");
+        trace.append("--------------------------------\n");
         Log.d(DETAILS, "L0 = " + hexaToBin(permutInitiale.substring(0, 8)) + " = " + permutInitiale.substring(0, 8));
         trace.append("L0 = ").append(hexaToBin(permutInitiale.substring(0, 8))).append(" = ").append(permutInitiale.substring(0, 8)).append("\n");
         Log.d(DETAILS, "R0 = " + hexaToBin(permutInitiale.substring(8, 16)) + " = " + permutInitiale.substring(8, 16));
@@ -554,15 +569,6 @@ public class DESActivity extends AppCompatActivity {
         permutFinale = permutation(tablePermutFinal, permutFinale);
 
         return permutFinale;
-    }
-
-    // Réduit le clavier quand on touche autre chose qu'un champs à saisir
-    public void closeKeyboard(View v) {
-        View view = this.getCurrentFocus();
-        if(view != null){
-            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 
     // Fonction qui quand on appuie sur le texte résultat remplace la zone de texte du message par le message résultat
