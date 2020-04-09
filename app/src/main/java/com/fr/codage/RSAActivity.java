@@ -1,7 +1,6 @@
 package com.fr.codage;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,11 +8,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class RSAActivity extends AppCompatActivity {
 
@@ -54,10 +51,10 @@ public class RSAActivity extends AppCompatActivity {
         detail = findViewById(R.id.detail);
     }
 
-    // Quand on appuie sur le bouton crypter :
-    // - On récupèrer les valeurs de la zone de texte message et de la clé si il ne sont pas vide
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction RSA() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici crypter
+    // Quand on appuie sur le bouton Crypter :
+    // - On récupère les valeurs de la zone de texte message, de P et de Q si ils ne sont pas vides
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on lance la fonction RSA() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : crypter
     public void crypter(View v){
         txt = editTMessage.getText().toString();
         p = editTP.getText().toString();
@@ -76,10 +73,10 @@ public class RSAActivity extends AppCompatActivity {
         }
     }
 
-    // Quand on appuie sur le bouton decrypter :
-    // - On récupèrer les valeurs de la zone de texte message et de la clé si il ne sont pas vide
-    // - Si c'est vide : on envoi une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction RSA() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici decrypter
+    // Quand on appuie sur le bouton Décrypter :
+    // - On récupèrer les valeurs de la zone de texte message, de P et de Q si ils ne sont pas vides
+    // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
+    // - Sinon on lance la fonction RSA() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : décrypter
     public void decrypter(View v){
         txt = editTMessage.getText().toString();
         p = editTP.getText().toString();
@@ -161,12 +158,12 @@ public class RSAActivity extends AppCompatActivity {
      * */
     public static String[] bloc(int m, int n) {
         String res = Integer.toString(m);					// On convertit l'entier "m" en string
-        ArrayList<String> l = new ArrayList();				// Liste qui sert à stocker la chaine de caractère
+        ArrayList<String> l = new ArrayList();				// Liste qui sert à stocker la chaîne de caractères
 
         if(m < n) {											// Si la valeur de "m" est inférieure à n alors on l'ajoute à la liste
             l.add(Integer.toString(m));
             return l.toArray(new String[1]);
-        } else {											// Sinon on décale la fin de lecture de la chaine jusqu'à ce qu'on trouve un "m" plus petit que "n"
+        } else {											// Sinon on décale la fin de lecture de la chaîne jusqu'à ce qu'on trouve un "m" plus petit que "n"
             int debut = 0;									// Index de début
             int fin = res.length();							// Index de fin
 
@@ -176,7 +173,7 @@ public class RSAActivity extends AppCompatActivity {
                 if(Integer.parseInt(index) < n) {			// Si la valeur de "m" est inférieure à "n"
                     l.add(res.substring(debut,fin));		// alors on ajoute à la liste le résultat correspondant aux positions de "debut" et "fin"
                     debut = fin;							// On place alors le "début" de lecture à la place de "fin"
-                    fin = res.length();						// et la "fin" prend la nouvelle longueur de la chaine actuelle
+                    fin = res.length();						// et la "fin" prend la nouvelle longueur de la chaîne actuelle
                 } else {
                     fin--;									// sinon on fait reculer "fin"
                 }
@@ -233,7 +230,7 @@ public class RSAActivity extends AppCompatActivity {
         }
 
         /*
-         * Cacul du pgcd pour déterminer "e"
+         * Calcul du pgcd pour déterminer "e"
          */
         while (pgcd(phi_n.intValue(), e.intValue()) != 1 ) {
             e = e.add(new BigInteger("1"));
@@ -268,7 +265,7 @@ public class RSAActivity extends AppCompatActivity {
         detail.setText(trace.toString());
     }
 
-    // Réduit le clavier quand on touche autre chose qu'un champs à saisir
+    // Réduit le clavier quand on touche autre chose qu'un champ à saisir
     public void closeKeyboard(View v) {
         View view = this.getCurrentFocus();
         if(view != null){
