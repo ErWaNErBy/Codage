@@ -54,7 +54,8 @@ public class RSAActivity extends AppCompatActivity {
     // Quand on appuie sur le bouton Crypter :
     // - On récupère les valeurs de la zone de texte message, de P et de Q si ils ne sont pas vides
     // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction RSA() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : crypter
+    // - Si P ou Q n'est pas premier : on envoie une bulle d'info pour préciser de donner un nombre premier
+    // - Sinon on convertit toutes les valeurs en BigInteger et on lance la fonction RSA() avec en paramètre le message, P, Q et la méthode de cryptage qui est ici : crypter
     public void crypter(View v){
         txt = editTMessage.getText().toString();
         p = editTP.getText().toString();
@@ -76,7 +77,8 @@ public class RSAActivity extends AppCompatActivity {
     // Quand on appuie sur le bouton Décrypter :
     // - On récupèrer les valeurs de la zone de texte message, de P et de Q si ils ne sont pas vides
     // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction RSA() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : décrypter
+    // - Si P ou Q n'est pas premier : on envoie une bulle d'info pour préciser de donner un nombre premier
+    // - Sinon on convertit toutes les valeurs en BigInteger et on lance la fonction RSA() avec en paramètre le message, P, Q et la méthode de cryptage qui est ici : décrypter
     public void decrypter(View v){
         txt = editTMessage.getText().toString();
         p = editTP.getText().toString();
