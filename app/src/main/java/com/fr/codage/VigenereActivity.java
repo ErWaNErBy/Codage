@@ -131,7 +131,7 @@ public class VigenereActivity extends AppCompatActivity {
 
             // ---------------------------------- AFFICHAGE
 
-            // On exécute la fonction getCharacterByDecimal() avec le décimal du caractère inversé qui retournera le caractère qui lui correspond et l'ajoute dans le message résultat
+            // On exécute la fonction getCharacterByDecimal() avec le décimal du caractère décalé qui retournera le caractère qui lui correspond et l'ajoute dans le message résultat
             messEncrypt.append(getCharacterByDecimal(codePointDecal));
         }
         result.setText(messEncrypt.toString());     // Affiche le message crypté / décrypté dans la zone de texte result
