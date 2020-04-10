@@ -243,10 +243,10 @@ public class DESActivity extends AppCompatActivity {
     public void getValDES(String bloc, String cle, int cryptingMethod){
         // Si la chaîne et la clé sont bien des hexa alors il exécute directement la fonction execDES() pour commencer le cryptage et affiche ensuite le résultat
         // Sinon on envoi une bulle d'info pour préciser que les champs ne sont pas conforme
-        Log.d(DETAILS, "-------------------------------------- TRACE --------------------------------------");
-        trace.append("-------------------------------------- TRACE --------------------------------------\n");
         if(hexaMode.isChecked()){
             if(testHex(bloc) && testHex(cle)){
+                Log.d(DETAILS, "-------------------------------------- TRACE --------------------------------------");
+                trace.append("-------------------------------------- TRACE --------------------------------------\n");
                 while(bloc.length()%16 != 0) bloc += "0";
                 String execution ="";
                 StringBuilder  messEncrypt = new StringBuilder();
@@ -268,7 +268,10 @@ public class DESActivity extends AppCompatActivity {
             if(!testHex(cle)){  // Si la clé n'est pas un hexa on envoi une bulle d'info pour préciser qu'il n'est pas conforme
                 Toast.makeText(getApplicationContext(), getString(R.string.keyNotHex), Toast.LENGTH_LONG).show();
             }else {
-                List<Integer> listOfDec = getListOfDec(bloc);   // Récupère la liste des décimaux de chaque caractère du bloc
+                Log.d(DETAILS, "-------------------------------------- TRACE --------------------------------------");
+                trace.append("-------------------------------------- TRACE --------------------------------------\n");
+                List<Integer> listOfDec = getListOfDec(bloc);       // Récupère la liste des décimaux de chaque caractère du bloc
+                while(listOfDec.size()%8 != 0) listOfDec.add(0);    // Ajoute des 0 pour faire une chaine de 8 octets
 
                 // [ Avec la liste des décimaux on crée d'une liste contenant des groupements de 8 caractères sous forme d'octet
                 List<List<String>> allList = new ArrayList<>();
@@ -277,7 +280,7 @@ public class DESActivity extends AppCompatActivity {
                     for(int i=j; i<(j+8); i++) {
                         String hexaOfCodePoint = Integer.toHexString(listOfDec.get(i));     // Récupère l'hexa du décimal à la position i de la liste
                         String hexToBinary = hexaToBin(hexaOfCodePoint);                    // Le converti en binaire
-                        while(hexToBinary.length() != 8) hexToBinary = "0" + hexToBinary;   // Complète les 0 manquante pour faire 8 bits
+                        while(hexToBinary.length() != 8) hexToBinary = "0" + hexToBinary;   // Complète les 0 manquantes pour faire 8 bits
                         list.add( hexToBinary );                                            // L'ajoute à la liste
                     }
                     j= j+7;                     // Saute les caractères déjà analysé dans la deuxième boucle
@@ -323,6 +326,42 @@ public class DESActivity extends AppCompatActivity {
         detail.setText(trace.toString());
     }
 
+    // Fonction qui exécute le cryptage / décryptage DES avec en paramètre un bloc et une clé en hexa et qui retourne le bloc chiffré
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String execDES(String bloc, String cle, int cryptingMethod) {
+        // Si la clé ne fait pas 64 bits on lui ajoute des 0 à la fin
+        while(cle.length() < 17) cle += "0";
+        // Récuperation des clés
+        String[] keys = getAllKeys(cle);
+
+        // Permutation initiale
+        Log.d(DETAILS, "BinOfBloc : " + hexaToBin(bloc));
+        String permutInitiale = permutation(tablePermutInitiale, bloc);
+        trace.append("--------------------------------\n");
+        Log.d(DETAILS, "L0 = " + hexaToBin(permutInitiale.substring(0, 8)) + " = " + permutInitiale.substring(0, 8));
+        trace.append("L0 = ").append(hexaToBin(permutInitiale.substring(0, 8))).append(" = ").append(permutInitiale.substring(0, 8)).append("\n");
+        Log.d(DETAILS, "R0 = " + hexaToBin(permutInitiale.substring(8, 16)) + " = " + permutInitiale.substring(8, 16));
+        trace.append("R0 = ").append(hexaToBin(permutInitiale.substring(8, 16))).append(" = ").append(permutInitiale.substring(8, 16)).append("\n");
+        Log.d(DETAILS, "--------------------------------");
+        trace.append("--------------------------------\n");
+        // Itération - Feistel
+        if (cryptingMethod == 1) {
+            for (int i = 0; i < 16; i++) {
+                permutInitiale = feistel(permutInitiale, keys[i], i);
+            }
+        } else {
+            for (int i = 15; i > -1; i--) {
+                permutInitiale = feistel(permutInitiale, keys[i], 15 - i);
+            }
+        }
+
+        // Permutation final
+        String permutFinale = permutInitiale.substring(8, 16) + permutInitiale.substring(0, 8);
+        permutFinale = permutation(tablePermutFinal, permutFinale);
+
+        return permutFinale;
+    }
+
     // Fonction qui vérifie si une chaîne de caractères est bien un hexa
     private static boolean testHex(String value) {
         boolean res;
@@ -355,7 +394,6 @@ public class DESActivity extends AppCompatActivity {
             }
             listOfDec.add(codePointKey); // On ajoute dans la liste le décimal du caractère à la position j du message
         }
-        while(listOfDec.size()%8 != 0) listOfDec.add(0);
         return listOfDec;
     }
 
@@ -533,42 +571,6 @@ public class DESActivity extends AppCompatActivity {
         trace.append("--------------------------------\n");
         // inversion de la partie gauche et droite
         return newLeftPart + newRightPart;
-    }
-
-    // Fonction qui exécute le cryptage / décryptage DES avec en paramètre un bloc et une clé en hexa et qui retourne le bloc chiffré
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public String execDES(String bloc, String cle, int cryptingMethod) {
-        // Si la clé ne fait pas 64 bits on lui ajoute des 0 à la fin
-        while(cle.length() < 17) cle += "0";
-        // Récuperation des clés
-        String[] keys = getAllKeys(cle);
-
-        // Permutation initiale
-        Log.d(DETAILS, "BinOfBloc : " + hexaToBin(bloc));
-        String permutInitiale = permutation(tablePermutInitiale, bloc);
-        trace.append("--------------------------------\n");
-        Log.d(DETAILS, "L0 = " + hexaToBin(permutInitiale.substring(0, 8)) + " = " + permutInitiale.substring(0, 8));
-        trace.append("L0 = ").append(hexaToBin(permutInitiale.substring(0, 8))).append(" = ").append(permutInitiale.substring(0, 8)).append("\n");
-        Log.d(DETAILS, "R0 = " + hexaToBin(permutInitiale.substring(8, 16)) + " = " + permutInitiale.substring(8, 16));
-        trace.append("R0 = ").append(hexaToBin(permutInitiale.substring(8, 16))).append(" = ").append(permutInitiale.substring(8, 16)).append("\n");
-        Log.d(DETAILS, "--------------------------------");
-        trace.append("--------------------------------\n");
-        // Itération - Feistel
-        if (cryptingMethod == 1) {
-            for (int i = 0; i < 16; i++) {
-                permutInitiale = feistel(permutInitiale, keys[i], i);
-            }
-        } else {
-            for (int i = 15; i > -1; i--) {
-                permutInitiale = feistel(permutInitiale, keys[i], 15 - i);
-            }
-        }
-
-        // Permutation final
-        String permutFinale = permutInitiale.substring(8, 16) + permutInitiale.substring(0, 8);
-        permutFinale = permutation(tablePermutFinal, permutFinale);
-
-        return permutFinale;
     }
 
     // Fonction qui quand on appuie sur le texte résultat remplace la zone de texte du message par le message résultat
