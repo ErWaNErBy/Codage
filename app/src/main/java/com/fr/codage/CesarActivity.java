@@ -122,7 +122,7 @@ public class CesarActivity extends AppCompatActivity {
             if (key > 255) key= key%256;            // Si la clé est supérieure à 255 (c'est-à-dire si il fait une boucle) on récupère le reste de la division pas 256
             if (key <0) key = (256-(-key))%256;     // Si la clé est inférieure à 0 on change la valeur pour qu'il part de la fin de la table ASCII étendue
 
-            // ---------------------------------- RECUPERATION DU CODE DECIMAL
+            // ---------------------------------- RECUPERATION DU CODE DECIMAL DECALE
 
             codePointDecal = codePoint + key;               // On récupère le décimal décalé en faisant la somme du décimal et du décalage
 
