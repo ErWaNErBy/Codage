@@ -194,15 +194,15 @@ public class HillActivity extends AppCompatActivity {
 
                 } else {                                // Sinon (la méthode de cryptage est 0, c'est-à-dire que l'on souhaite décripter) ..
 
-                    //-------------- Multiplication par la matrice
+                    //-------------- Multiplication avec la comatrice
 
-                    int[] inverseDet = invDet(pA,pB,pC,pD);                 // On inverse le déterminant
-                    int invMat = inverMatrice(determinant, 256);      // On récupère l'inverse du déterminant modulo 256
-                    for(int j = 0; j<inverseDet.length; j++) {
-                        inverseDet[j] =(inverseDet[j]*invMat);          // On multiplie le déterminant avec chaque élément de la matrice
+                    int[] transpo = transpoComatrice(pA,pB,pC,pD);      // On récupère la transposée de la comatrice
+                    int invDet = inverDet(determinant, 256);      // On récupère l'inverse du déterminant modulo 256
+                    for(int j = 0; j<transpo.length; j++) {
+                        transpo[j] =(transpo[j]*invDet);          // On multiplie l'inverse du déterminant avec chaque élément de la transposée
                     }
-                    int val0 = mod(inverseDet[0]*codePointChar0 + inverseDet[1]*codePointChar1,256);    // On récupère la valeur du décimal du premier élément du bloc
-                    int val1 = mod(inverseDet[2]*codePointChar0 + inverseDet[3]*codePointChar1,256);    // On récupère la valeur du décimal du deuxième élément du bloc
+                    int val0 = mod(transpo[0]*codePointChar0 + transpo[1]*codePointChar1,256);    // On récupère la valeur du décimal du premier élément du bloc
+                    int val1 = mod(transpo[2]*codePointChar0 + transpo[3]*codePointChar1,256);    // On récupère la valeur du décimal du deuxième élément du bloc
 
                     Log.d(DETAILS,"codePoint : "+codePointChar0 +" "+codePointChar1+" values : "+val0+" "+val1);
 
@@ -227,13 +227,13 @@ public class HillActivity extends AppCompatActivity {
         return(a*d-b*c);
     }
 
-    // Fonction qui retourne la matrice pour calculer l'inverse de la matrice avec en paramètre les valeurs d'une matrice
-    public static int[] invDet(int a, int b, int c, int d) {
+    // Fonction qui retourne la transposée de la comatrice avec en paramètre les valeurs d'une matrice
+    public static int[] transpoComatrice(int a, int b, int c, int d) {
         return new int[]{d,-b,-c,a};
     }
 
     // Fonction qui prend en paramètre le déterminant et le reste de l'inverse du déterminant
-    public static int inverMatrice(int k, int mod) {
+    public static int inverDet(int k, int mod) {
         int i = 1;
         while(true) {
             i++;
