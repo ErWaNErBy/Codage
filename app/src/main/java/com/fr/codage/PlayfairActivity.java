@@ -49,7 +49,7 @@ public class PlayfairActivity extends AppCompatActivity {
     // Quand on appuie sur le bouton Crypter :
     // - On récupère les valeurs de la zone de texte message et de la clé si ils ne sont pas vides
     // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction playfair() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : crypter
+    // - Sinon si les zones de textes contiennent bien que des lettres, on lance la fonction playfair() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : crypter
     public void crypter(View v){
         trace.setLength(0);
         detail.setText("");
@@ -68,7 +68,7 @@ public class PlayfairActivity extends AppCompatActivity {
     // Quand on appuie sur le bouton Décrypter :
     // - On récupère les valeurs de la zone de texte message et de la clé si ils ne sont pas vides
     // - Si c'est vide : on envoie une bulle d'info pour préciser de remplir tous les champs
-    // - Sinon on lance la fonction playfair() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : décrypter
+    // - Sinon si les zones de textes contiennent bien que des lettres, on lance la fonction playfair() avec en paramètre le message, le message clé et la méthode de cryptage qui est ici : décrypter
     public void decrypter(View v){
         trace.setLength(0);
         detail.setText("");
