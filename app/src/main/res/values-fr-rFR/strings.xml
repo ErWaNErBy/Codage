@@ -18,4 +18,5 @@
     <string name="notPrime">" n'est pas un nombre premier"</string>
     <string name="notHex">Format hexadécimal incorrect</string>
     <string name="keyNotHex">Format hexadécimal de la clé incorrect</string>
+    <string name="validTexts">Les champs doivent contenir que des lettres</string>
 </resources>

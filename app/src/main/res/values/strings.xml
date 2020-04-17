@@ -25,4 +25,5 @@
     <string name="notPrime">" isn't a prime number"</string>
     <string name="notHex">Invalid hexadecimal format</string>
     <string name="keyNotHex">Invalid hexadecimal format of the key</string>
+    <string name="validTexts">Fields must contain only letters</string>
 </resources>
