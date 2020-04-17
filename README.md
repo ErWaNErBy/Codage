@@ -9,3 +9,4 @@ Projet de Master 1 Informatique contenant différentes méthodes de cryptage en 
 - Hill ( ASCII étendus OEM )
 - DES ( ASCII étendus OEM et hexadécimal )
 - RSA ( Chiffre )
+- Playfair ( Alphabet classique )
